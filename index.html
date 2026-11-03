@@ -402,8 +402,8 @@ footer .logo{font-size:1.6rem;color:var(--text)}
 </footer>
 
 <script>
-/* ============ JS 0: 3D-Modell (nur CSS-3D, keine Bibliothek) ============ */
-(function(){
+/* ============ JS 0: Rückfall-Modell (nur CSS-3D, falls WebGL fehlt) ============ */
+function cssModel(){
   const world = document.getElementById('world');
   const stage = document.getElementById('stage');
   const NFC = `<svg class="pad-ico" viewBox="0 0 40 40" fill="none" stroke-width="3" stroke-linecap="round"><circle class="dot" cx="11" cy="20" r="2.8"/><path d="M18 11 q10 9 0 18"/><path d="M25 5 q17 15 0 30"/></svg>`;
@@ -469,7 +469,200 @@ footer .logo{font-size:1.6rem;color:var(--text)}
   (function loop(){ if(!drag&&!still){ry+=.25; draw();} requestAnimationFrame(loop); })();
   draw();
   window.__model={set:(y,x)=>{ry=y;rx=x;draw()},stop:()=>{}};
-})();
+}
+
+/* ============ JS 0b: Weiches, glänzendes 3D-Modell (reines WebGL, Raymarching) ============
+   Das Modell ist als Distanzfeld (SDF) beschrieben: abgerundete Körper, die weich ineinander übergehen.
+   Der Fragment-Shader berechnet pro Pixel Form, Licht, Spiegelungen und Schatten. Keine Bibliothek nötig. */
+function initGL(){
+  const stage = document.getElementById('stage');
+  const cv = document.createElement('canvas');
+  cv.setAttribute('aria-hidden','true');
+  cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block';
+  const gl = cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false});
+  if(!gl) return false;
+
+  const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+  const FS = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uRes; uniform float uRY, uEl, uD;
+uniform sampler2D uGlass, uPad;
+
+/* --- Formen --- */
+float sdRB(vec3 p, vec3 b, float r){ vec3 q=abs(p)-b+r; return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.)-r; }
+float sdRC(vec3 p, float r, float h, float rad){            /* abgerundeter Zylinder (Pad) */
+  vec2 d=vec2(length(p.xz)-r+rad, abs(p.y)-h+rad);
+  return min(max(d.x,d.y),0.)+length(max(d,0.))-rad; }
+float smin(float a, float b, float k){ float h=max(k-abs(a-b),0.)/k; return min(a,b)-h*h*k*.25; }
+
+/* Welt -> Modell (Drehung um die senkrechte Achse) */
+vec3 toDir(vec3 p){ float c=cos(uRY), s=sin(uRY); return vec3(c*p.x-s*p.z, p.y, s*p.x+c*p.z); }
+vec3 toObj(vec3 p){ vec3 q=toDir(p); q.y+=.5; return q; }
+
+/* Szene: x = Abstand, y = Material (1 Gehäuse, 2 Rahmen, 3 Display, 4 Pad) */
+vec2 map(vec3 p){
+  vec3 q=toObj(p);
+  float base =sdRB(q-vec3(0.,-.65,0.),   vec3(1.6,.25,1.05), .24);
+  float panel=sdRB(q-vec3(0.,.55,-.62),  vec3(1.45,1.35,.2), .2);
+  float body =smin(base,panel,.28);
+  float frame=max(sdRB(q-vec3(0.,.62,-.42),vec3(1.12,.8,.09),.1),
+                 -sdRB(q-vec3(0.,.62,-.42),vec3(.93,.61,.3),.1));
+  float glass=sdRB(q-vec3(0.,.62,-.43),  vec3(.93,.61,.05), .04);
+  float p1=sdRC(q-vec3(-.85,-.36,.38), .5,.07,.05);
+  float p2=sdRC(q-vec3( .85,-.36,.38), .5,.07,.05);
+  vec3 v=q-vec3(0.,.5,-.84);
+  float p3=sdRC(vec3(v.x,v.z,v.y), .5,.07,.05);               /* Pad auf der Rückseite */
+  float pad=min(p1,min(p2,p3));
+  vec2 r=vec2(body,1.);
+  if(frame<r.x) r=vec2(frame,2.);
+  if(glass<r.x) r=vec2(glass,3.);
+  if(pad<r.x)   r=vec2(pad,4.);
+  return r;
+}
+vec3 calcN(vec3 p){ vec2 e=vec2(.0015,0.);
+  return normalize(vec3(map(p+e.xyy).x-map(p-e.xyy).x, map(p+e.yxy).x-map(p-e.yxy).x, map(p+e.yyx).x-map(p-e.yyx).x)); }
+float softShadow(vec3 ro, vec3 rd){ float res=1., t=.05;
+  for(int i=0;i<28;i++){ float h=map(ro+rd*t).x; res=min(res,8.*h/t); t+=clamp(h,.04,.4); if(res<.01||t>6.) break; }
+  return clamp(res,0.,1.); }
+float calcAO(vec3 p, vec3 n){ float o=0., s=1.;
+  for(int i=0;i<4;i++){ float h=.05+.13*float(i); o+=(h-map(p+n*h).x)*s; s*=.7; }
+  return clamp(1.-1.6*o,0.,1.); }
+
+/* Umgebung mit Softboxen -> sorgt für Glanzlichter */
+vec3 env(vec3 d){
+  vec3 c=mix(vec3(.04,.06,.09),vec3(.24,.30,.41),smoothstep(-.3,.9,d.y));
+  c+=vec3(1.,.97,.92)*pow(max(dot(d,normalize(vec3(-.5,.8,.6))),0.),22.)*2.4;
+  c+=vec3(1.,.97,.92)*smoothstep(.6,.35,abs(d.x-.1))*smoothstep(.13,.06,abs(d.y-.32))*step(0.,d.z)*1.5;
+  c+=vec3(1.,.50,.35)*pow(max(dot(d,normalize(vec3(.9,.25,-.4))),0.),10.)*1.7;
+  c+=vec3(.4,.6,1.)*pow(max(dot(d,normalize(vec3(-.9,.1,-.5))),0.),9.)*.9;
+  return c; }
+
+vec3 shade(vec3 p, vec3 rd, float id){
+  vec3 n=calcN(p), qn=toDir(n), q=toObj(p);
+  vec3 alb=vec3(.07,.11,.17); float gloss=.85;
+  if(id>1.5&&id<2.5){ alb=vec3(.95,.27,.13); gloss=.8; }
+  if(id>2.5&&id<3.5){ alb=vec3(.02); gloss=.9;
+    vec2 uv=vec2(q.x/1.86+.5, .5-(q.y-.62)/1.22);
+    alb=pow(texture2D(uGlass,clamp(uv,0.,1.)).rgb,vec3(2.2)); }
+  if(id>3.5){ alb=vec3(.96,.93,.87); gloss=.6; vec2 uv=vec2(-1.);
+    if(qn.y>.7)  uv=(q.xz-vec2(sign(q.x)*.85,.38))+.5;
+    if(qn.z<-.7) uv=vec2(.5-q.x, .5-(q.y-.5));
+    if(uv.x>=0.&&uv.x<=1.&&uv.y>=0.&&uv.y<=1.){ vec4 t=texture2D(uPad,uv); alb=mix(alb,pow(t.rgb,vec3(2.2)),t.a); } }
+  vec3 L=normalize(vec3(-.5,.8,.6));
+  float sh=softShadow(p+n*.02,L), occ=calcAO(p,n);
+  float dif=max(dot(n,L),0.);
+  float fre=pow(1.-max(dot(n,-rd),0.),4.);
+  vec3 refl=env(reflect(rd,n));
+  vec3 col=alb*(vec3(.10,.12,.17)*occ + dif*sh*vec3(1.,.95,.9)*.85);
+  col+=refl*gloss*(.10+.9*fre)*occ;
+  col+=vec3(1.)*pow(max(dot(n,normalize(L-rd)),0.),110.)*sh*gloss*1.4;
+  if(id>2.5&&id<3.5) col=alb*1.4+refl*.07*occ+refl*.25*fre;          /* Display leuchtet leicht */
+  return col; }
+
+void main(){
+  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
+  vec3 ro=vec3(0.,sin(uEl)*uD,cos(uEl)*uD);
+  vec3 fw=normalize(-ro), rt=normalize(cross(fw,vec3(0.,1.,0.))), up=cross(rt,fw);
+  vec3 rd=normalize(uv.x*rt+uv.y*up+2.2*fw);
+  vec3 col=vec3(0.); float a=0.;
+
+  /* Objekt: erst Hüllkugel prüfen, dann marschieren */
+  float b=dot(ro,rd), h=b*b-(dot(ro,ro)-9.8);
+  float hit=-1., id=0.;
+  if(h>0.){ float t=max(-b-sqrt(h),0.), t1=-b+sqrt(h);
+    for(int i=0;i<90;i++){ vec2 m=map(ro+rd*t); if(m.x<.0012*t){hit=t;id=m.y;break;} t+=m.x*.9; if(t>t1)break; } }
+  if(hit>0.){ col=shade(ro+rd*hit,rd,id); a=1.; }
+  else {
+    /* Boden: nur weicher Schatten (Rest bleibt transparent) */
+    float tg=(-1.4-ro.y)/rd.y;
+    if(tg>0.){ vec3 pg=ro+rd*tg; float d=map(pg).x;
+      float s=softShadow(pg+vec3(0.,.02,0.),normalize(vec3(-.5,.8,.6)));
+      a=(.55*exp(-max(d,0.)*1.5)+.35*(1.-s))*(1.-smoothstep(3.5,6.5,length(pg.xz))); a=clamp(a,0.,.85); }
+  }
+  col=clamp((col*(2.51*col+.03))/(col*(2.43*col+.59)+.14),0.,1.);   /* Tonemapping (filmisch) */
+  col=pow(col,vec3(1./2.2));
+  gl_FragColor=vec4(col*a,a);
+}`;
+
+  function sh(type,src){ const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){ console.warn(gl.getShaderInfoLog(s)); return null; } return s; }
+  const vs=sh(gl.VERTEX_SHADER,VS), fs=sh(gl.FRAGMENT_SHADER,FS);
+  if(!vs||!fs) return false;
+  const pr=gl.createProgram(); gl.attachShader(pr,vs); gl.attachShader(pr,fs); gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS)) return false;
+  gl.useProgram(pr);
+  const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(pr,'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const U=n=>gl.getUniformLocation(pr,n);
+  const uRes=U('uRes'), uRY=U('uRY'), uEl=U('uEl'), uD=U('uD');
+
+  /* Texturen (mit Canvas 2D gezeichnet): Display-Inhalt und NFC-Symbol */
+  function makeTex(unit,cnv){
+    const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cnv); return t; }
+  function nfcIcon(c,cx,cy,s,col,lw){
+    c.strokeStyle=col; c.fillStyle=col; c.lineWidth=lw; c.lineCap='round';
+    c.beginPath(); c.arc(cx-s*.55,cy,s*.1,0,7); c.fill();
+    [.42,.82].forEach(r=>{ c.beginPath(); c.arc(cx-s*.55,cy,s*r,-.85,.85); c.stroke(); }); }
+  function drawTextures(){
+    const g=document.createElement('canvas'); g.width=1024; g.height=672; const c=g.getContext('2d');
+    const bg=c.createLinearGradient(0,0,1024,672); bg.addColorStop(0,'#101923'); bg.addColorStop(1,'#1b2735');
+    c.fillStyle=bg; c.fillRect(0,0,1024,672);
+    const glow=c.createRadialGradient(512,300,20,512,300,520); glow.addColorStop(0,'rgba(255,122,89,.22)'); glow.addColorStop(1,'rgba(255,122,89,0)');
+    c.fillStyle=glow; c.fillRect(0,0,1024,672);
+    nfcIcon(c,560,150,110,'#ff7a59',16);
+    c.textAlign='center'; c.textBaseline='alphabetic';
+    c.font='700 140px Fraunces, Georgia, serif';
+    const w1=c.measureText('NF').width, w2=c.measureText('Connect').width, x0=512-(w1+w2)/2;
+    c.textAlign='left'; c.fillStyle='#f3efe7'; c.fillText('NF',x0,400); c.fillStyle='#ff7a59'; c.fillText('Connect',x0+w1,400);
+    c.textAlign='center'; c.fillStyle='#a9a79f'; c.font='600 40px Manrope, system-ui, sans-serif';
+    if('letterSpacing' in c) c.letterSpacing='10px';
+    c.fillText('TAP · ORDER · PAY',512,490);
+    const p=document.createElement('canvas'); p.width=p.height=256; const d=p.getContext('2d');
+    nfcIcon(d,160,128,104,'#ff7a59',17);
+    makeTex(0,g); makeTex(1,p);
+    gl.uniform1i(U('uGlass'),0); gl.uniform1i(U('uPad'),1);
+  }
+  drawTextures();
+  if(document.fonts&&document.fonts.load){
+    Promise.all([document.fonts.load('700 100px Fraunces'),document.fonts.load('600 30px Manrope')])
+      .catch(()=>{}).then(()=>document.fonts.ready).then(drawTextures);
+  }
+
+  stage.insertBefore(cv,stage.firstChild);
+
+  /* Drehen: Auto-Rotation + Ziehen */
+  let ry=.55, el=.30, drag=false, lx=0, ly=0, visible=true;
+  const still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  stage.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;stage.setPointerCapture(e.pointerId)});
+  stage.addEventListener('pointermove',e=>{ if(!drag)return;
+    ry+=(e.clientX-lx)*.009; el=Math.max(.07,Math.min(.8,el+(e.clientY-ly)*.005)); lx=e.clientX; ly=e.clientY; });
+  ['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t,()=>drag=false));
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(stage);
+
+  function frame(){
+    requestAnimationFrame(frame);
+    if(!visible) return;
+    if(!drag&&!still) ry+=.004;
+    const k=Math.min(2,Math.max(window.devicePixelRatio||1,1.5));      /* leicht überabgetastet = glatte Kanten */
+    const w=stage.clientWidth, h=stage.clientHeight, W=Math.round(w*k), H=Math.round(h*k);
+    if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; gl.viewport(0,0,W,H); }
+    gl.uniform2f(uRes,W,H); gl.uniform1f(uRY,ry); gl.uniform1f(uEl,el);
+    gl.uniform1f(uD,10*Math.max(1,h/w));
+    gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+  frame();
+  window.__model={set:(yDeg,xDeg)=>{ry=yDeg*Math.PI/180; el=-xDeg*Math.PI/180;}};
+  return true;
+}
+if(!initGL()) cssModel();   /* ohne WebGL: Rückfall auf das einfache CSS-3D-Modell */
 
 /* ============ JS 1: Scroll-Animationen ============ */
 const io = new IntersectionObserver(entries => {
