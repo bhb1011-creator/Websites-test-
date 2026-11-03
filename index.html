@@ -66,11 +66,24 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 .hero-actions{display:flex;flex-wrap:wrap;gap:14px}
 .hero-meta{display:flex;gap:28px;margin-top:40px;color:var(--muted);font-size:.9rem;flex-wrap:wrap}
 .hero-meta b{display:block;color:var(--text);font-family:var(--serif);font-size:1.5rem}
-.proto{display:flex;justify-content:center}
-.proto svg{width:min(380px,90%);height:auto;filter:drop-shadow(0 40px 50px rgba(0,0,0,.5));animation:float 6s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-10px)}}
-.wave{transform-origin:center;animation:pulse 2.4s ease-out infinite}
-.wave:nth-child(2){animation-delay:.4s}.wave:nth-child(3){animation-delay:.8s}
+.proto{position:relative;display:flex;flex-direction:column;align-items:center}
+.stage{position:relative;width:100%;max-width:440px;height:440px;perspective:1100px;cursor:grab;touch-action:pan-y;user-select:none}
+.stage:active{cursor:grabbing}
+.stage::before{content:"";position:absolute;inset:8% 6%;background:radial-gradient(circle,rgba(255,122,89,.16),transparent 65%);pointer-events:none}
+.world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.box{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.face{position:absolute;backface-visibility:hidden;display:grid;place-items:center;overflow:hidden}
+.floor{position:absolute;left:-210px;top:-150px;width:420px;height:300px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);transform:translateY(128px) rotateX(90deg)}
+.pad-ico{width:70%;height:70%}
+.pad-ico path,.pad-ico circle{stroke:#ff7a59}
+.pad-ico .dot{fill:#ff7a59;stroke:none}
+.glass-label{font-family:var(--serif);font-weight:700;color:#f3efe7;font-size:26px;letter-spacing:-.01em;text-align:center;line-height:1.1}
+.glass-label span{color:#ff7a59}
+.glass-label small{display:block;font:600 11px var(--sans);letter-spacing:.2em;color:#a9a79f;margin-top:8px;text-transform:uppercase}
+.proto-hint{color:var(--muted);font-size:.82rem;margin-top:6px}
+.proto-waves{position:absolute;right:2%;top:6%;width:90px;pointer-events:none}
+.proto-waves path{fill:none;stroke:#ff7a59;stroke-width:3;stroke-linecap:round;animation:pulse 2.4s ease-out infinite;opacity:0}
+.proto-waves path:nth-child(2){animation-delay:.4s}.proto-waves path:nth-child(3){animation-delay:.8s}
 @keyframes pulse{0%{opacity:0}30%{opacity:.9}100%{opacity:0}}
 @media(min-width:900px){.hero .wrap{grid-template-columns:1.1fr .9fr}}
 
@@ -205,40 +218,13 @@ footer .logo{font-size:1.6rem;color:var(--text)}
       </div>
     </div>
 
-    <!-- Der echte Prototyp als SVG nachgezeichnet -->
+    <!-- 3D-Modell des NFConnect-Aufstellers (wird per JS aus Quadern gebaut) -->
     <div class="proto reveal">
-      <svg viewBox="0 0 400 440" role="img" aria-label="NFConnect Tischaufsteller: weißes Gehäuse mit grünem Rahmen und @-Taste">
-        <!-- NFC-Wellen -->
-        <g fill="none" stroke="#ff7a59" stroke-width="3" stroke-linecap="round">
-          <path class="wave" d="M300 60 q30 30 0 60"/>
-          <path class="wave" d="M322 44 q48 46 0 92"/>
-          <path class="wave" d="M344 28 q66 62 0 124"/>
-        </g>
-        <!-- Standfuß / Gehäuse -->
-        <path d="M60 250 h230 v130 q0 20 -20 20 h-190 q-20 0 -20 -20z" fill="#f4f2ee"/>
-        <path d="M60 330 h230 v50 q0 20 -20 20 h-190 q-20 0 -20 -20z" fill="#dcd8d0" opacity=".55"/>
-        <!-- Aufrechte Rückwand -->
-        <rect x="68" y="40" width="214" height="300" rx="10" fill="#fbfaf7"/>
-        <rect x="68" y="40" width="214" height="300" rx="10" fill="none" stroke="#e4e0d8"/>
-        <!-- Grüner Rahmen + weißes Feld -->
-        <rect x="84" y="62" width="182" height="172" rx="6" fill="#2f9e4f"/>
-        <rect x="84" y="62" width="182" height="172" rx="6" fill="none" stroke="#1f7a3a" stroke-width="2"/>
-        <rect x="102" y="80" width="146" height="136" rx="3" fill="#fdfdfb"/>
-        <!-- NFC-Symbol im Feld -->
-        <g transform="translate(175 148)" fill="none" stroke="#c9c5bb" stroke-width="5" stroke-linecap="round">
-          <circle cx="-14" cy="0" r="5" fill="#c9c5bb" stroke="none"/>
-          <path d="M-2 -14 q14 14 0 28"/><path d="M12 -26 q26 26 0 52"/>
-        </g>
-        <!-- @-Taste -->
-        <rect x="88" y="262" width="62" height="56" rx="10" fill="#f9f8f4" stroke="#dcd8d0"/>
-        <circle cx="119" cy="290" r="22" fill="#cfe9d6" stroke="#2f9e4f" stroke-width="3"/>
-        <text x="119" y="300" text-anchor="middle" font-family="Fraunces,serif" font-size="30" font-weight="700" fill="#2f9e4f">@</text>
-        <!-- Magnetfach -->
-        <rect x="178" y="262" width="92" height="76" rx="12" fill="#f9f8f4" stroke="#dcd8d0"/>
-        <circle cx="203" cy="288" r="6" fill="#b9b5ab"/><circle cx="244" cy="316" r="6" fill="#b9b5ab"/>
-        <!-- Schatten unten -->
-        <ellipse cx="175" cy="408" rx="130" ry="9" fill="#000" opacity=".25"/>
-      </svg>
+      <div class="stage" id="stage" aria-label="Drehbares 3D-Modell des NFConnect-Tischaufstellers" role="img">
+        <div class="world" id="world"></div>
+        <svg class="proto-waves" viewBox="0 0 90 120" aria-hidden="true"><path d="M20 30 q22 30 0 60"/><path d="M40 18 q36 42 0 84"/><path d="M60 6 q50 54 0 108"/></svg>
+      </div>
+      <p class="proto-hint">↔ Ziehen zum Drehen</p>
     </div>
   </div>
 </header>
@@ -416,6 +402,73 @@ footer .logo{font-size:1.6rem;color:var(--text)}
 </footer>
 
 <script>
+/* ============ JS 0: 3D-Modell (nur CSS-3D, keine Bibliothek) ============ */
+(function(){
+  const world = document.getElementById('world');
+  const stage = document.getElementById('stage');
+  const NFC = `<svg class="pad-ico" viewBox="0 0 40 40" fill="none" stroke-width="3" stroke-linecap="round"><circle class="dot" cx="11" cy="20" r="2.8"/><path d="M18 11 q10 9 0 18"/><path d="M25 5 q17 15 0 30"/></svg>`;
+  /* dunkle Abschattung je Seite, damit der Quader räumlich wirkt */
+  const SHADE = {front:0, right:.18, left:.28, back:.38, top:-.07, bottom:.5};
+
+  /* Quader bauen: Breite w, Höhe h, Tiefe d, Mittelpunkt x/y/z, Farbe; optional Inhalt je Seite */
+  function box({w,h,d,x,y,z,color,radius=0,content={}}){
+    const el = document.createElement('div'); el.className='box';
+    el.style.transform=`translate3d(${x}px,${y}px,${z}px)`;
+    const sides = {
+      front :[w,h,`translateZ(${d/2}px)`],
+      back  :[w,h,`rotateY(180deg) translateZ(${d/2}px)`],
+      right :[d,h,`rotateY(90deg) translateZ(${w/2}px)`],
+      left  :[d,h,`rotateY(-90deg) translateZ(${w/2}px)`],
+      top   :[w,d,`rotateX(90deg) translateZ(${h/2}px)`],
+      bottom:[w,d,`rotateX(-90deg) translateZ(${h/2}px)`]
+    };
+    for(const k in sides){
+      const [fw,fh,t]=sides[k], f=document.createElement('div'); f.className='face';
+      const sh=SHADE[k], ov = sh>=0 ? `rgba(0,0,0,${sh})` : `rgba(255,255,255,${-sh})`;
+      f.style.cssText=`width:${fw}px;height:${fh}px;left:${-fw/2}px;top:${-fh/2}px;transform:${t};`+
+        `background:linear-gradient(${ov},${ov}),${color};border-radius:${radius}px`;
+      if(content[k]) f.innerHTML=content[k];
+      el.appendChild(f);
+    }
+    world.appendChild(el);
+  }
+
+  const BODY='#2b3645', CORAL='#ff7a59', CREAM='#f3efe7', GLASS='linear-gradient(145deg,#1a232e,#0c1118)';
+  /* Gehäuse: Sockel + senkrechte Rückwand (Form wie der Prototyp, eigene Farben) */
+  box({w:260,h:30,d:170,x:0,y:105,z:0,color:BODY});
+  box({w:260,h:260,d:26,x:0,y:-40,z:-66,color:BODY});
+  /* Rahmen um das Display (4 Leisten) */
+  box({w:196,h:12,d:8,x:0,y:-154,z:-49,color:CORAL});
+  box({w:196,h:12,d:8,x:0,y:-16,z:-49,color:CORAL});
+  box({w:12,h:126,d:8,x:-92,y:-85,z:-49,color:CORAL});
+  box({w:12,h:126,d:8,x:92,y:-85,z:-49,color:CORAL});
+  /* Display-Glas mit Schriftzug */
+  box({w:172,h:126,d:2,x:0,y:-85,z:-52,color:GLASS,
+       content:{front:'<div class="glass-label">NF<span>Connect</span><small>Tap · Order · Pay</small></div>'}});
+  /* ZWEI NFC-Pads auf dem Sockel – beide mit NFC-Symbol */
+  box({w:84,h:8,d:84,x:-66,y:86,z:22,color:CREAM,radius:10,content:{top:NFC}});
+  box({w:84,h:8,d:84,x:66, y:86,z:22,color:CREAM,radius:10,content:{top:NFC}});
+  const floor=document.createElement('div'); floor.className='floor'; world.appendChild(floor);
+
+  /* Drehen: Auto-Rotation + Ziehen mit Maus/Finger */
+  let ry=-30, rx=-17, drag=false, lx=0, ly=0;
+  const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function draw(){
+    const s=Math.min(1.1, stage.clientWidth/400);
+    world.style.transform=`translateY(${28*s}px) scale(${s}) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  }
+  stage.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;stage.setPointerCapture(e.pointerId)});
+  stage.addEventListener('pointermove',e=>{
+    if(!drag)return;
+    ry+=(e.clientX-lx)*.5; rx=Math.max(-45,Math.min(-4,rx+(e.clientY-ly)*.3));
+    lx=e.clientX; ly=e.clientY; draw();
+  });
+  ['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t,()=>drag=false));
+  (function loop(){ if(!drag&&!still){ry+=.25; draw();} requestAnimationFrame(loop); })();
+  draw();
+  window.__model={set:(y,x)=>{ry=y;rx=x;draw()},stop:()=>{}};
+})();
+
 /* ============ JS 1: Scroll-Animationen ============ */
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
