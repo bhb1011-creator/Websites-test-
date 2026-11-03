@@ -448,6 +448,8 @@ footer .logo{font-size:1.6rem;color:var(--text)}
   /* ZWEI NFC-Pads auf dem Sockel – beide mit NFC-Symbol */
   box({w:84,h:8,d:84,x:-66,y:86,z:22,color:CREAM,radius:10,content:{top:NFC}});
   box({w:84,h:8,d:84,x:66, y:86,z:22,color:CREAM,radius:10,content:{top:NFC}});
+  /* Drittes NFC-Pad auf der Rückseite der Rückwand (für die andere Seite des Tischs) */
+  box({w:84,h:84,d:8,x:0,y:-40,z:-83,color:CREAM,radius:10,content:{back:NFC}});
   const floor=document.createElement('div'); floor.className='floor'; world.appendChild(floor);
 
   /* Drehen: Auto-Rotation + Ziehen mit Maus/Finger */
