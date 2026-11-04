@@ -502,7 +502,7 @@ float smin(float a, float b, float k){ float h=max(k-abs(a-b),0.)/k; return min(
 
 /* Welt -> Modell (Drehung um die senkrechte Achse) */
 vec3 toDir(vec3 p){ float c=cos(uRY), s=sin(uRY); return vec3(c*p.x-s*p.z, p.y, s*p.x+c*p.z); }
-vec3 toObj(vec3 p){ vec3 q=toDir(p); q.y+=1.05; return q; }
+vec3 toObj(vec3 p){ vec3 q=toDir(p); q.y+=.75; return q; }
 
 const vec3 N45=vec3(0.,.70711,.70711), T45=vec3(0.,.70711,-.70711);   /* Normale / Richtung der 45°-Schräge */
 vec3 padLocal(vec3 q, float sx){ vec3 v=q-vec3(sx*.5,0.,.15)+N45*.04; return vec3(v.x,dot(v,N45),dot(v,T45)); }
@@ -515,18 +515,18 @@ vec3 tiltQ(vec3 q){ vec3 H=vec3(0.,-.9,-.6), v=q-H; float c=cos(.15), s=sin(.15)
 vec2 map(vec3 p){
   vec3 q=toObj(p), t=tiltQ(q);
   /* Sockel als Keil: Quader, oben mit 45°-Schräge angeschnitten (weich verrundet) */
-  float bx  =sdRB(q-vec3(0.,-.15,0.), vec3(1.1,.75,.85), .26);
+  float bx  =sdRB(q-vec3(0.,-.15,0.), vec3(1.05,.75,.85), .26);
   float base=-smin(-bx,-dot(q-vec3(0.,.5,-.35),N45),.15);
   /* zwei quadratische Mulden in der Schräge (Platz für die Tags) */
   float pk1=sdRS(padLocal(q,-1.)-vec3(0.,.08,0.), vec2(.44), .14,.1,.02);
   float pk2=sdRS(padLocal(q, 1.)-vec3(0.,.08,0.), vec2(.44), .14,.1,.02);
   base=max(base,-min(pk1,pk2));
   /* dünne obere Platte mit erhabenem quadratischem Rahmen und Fenster */
-  float panel=sdRB(t-vec3(0.,1.05,-.6), vec3(1.05,1.95,.11), .1);
+  float panel=sdRB(t-vec3(0.,.75,-.6), vec3(1.1,1.65,.12), .1);
   float body =smin(base,panel,.3);
-  float frame=max(sdRB(t-vec3(0.,1.95,-.44),vec3(.88,.9,.06),.08),
-                 -sdRB(t-vec3(0.,1.95,-.44),vec3(.7,.72,.3),.06));
-  float glass=sdRB(t-vec3(0.,1.95,-.49), vec3(.71,.73,.04), .03);
+  float frame=max(sdRB(t-vec3(0.,1.4,-.44),vec3(.95,.88,.06),.08),
+                 -sdRB(t-vec3(0.,1.4,-.44),vec3(.77,.7,.3),.06));
+  float glass=sdRB(t-vec3(0.,1.4,-.49), vec3(.78,.71,.04), .03);
   float p1=sdRS(padLocal(q,-1.), vec2(.36), .05,.12,.04);      /* beide Tags im 45°-Winkel */
   float p2=sdRS(padLocal(q, 1.), vec2(.36), .05,.12,.04);
   float pad=min(p1,p2);                                        /* NFC-Tags nur vorne */
@@ -556,12 +556,12 @@ vec3 env(vec3 d){
 
 vec3 shade(vec3 p, vec3 rd, float id){
   vec3 n=calcN(p), qn=toDir(n), q=toObj(p);
-  vec3 alb=vec3(.07,.11,.17); float gloss=.85;
-  if(id>1.5&&id<2.5){ alb=vec3(.95,.27,.13); gloss=.8; }
+  vec3 alb=vec3(.84,.82,.78); float gloss=.8;
+  if(id>1.5&&id<2.5){ alb=vec3(.03,.36,.09); gloss=.85; }
   if(id>2.5&&id<3.5){ alb=vec3(.02); gloss=.9;
-    vec3 tq=tiltQ(q); vec2 uv=vec2(tq.x/1.42+.5, .5-(tq.y-1.95)/1.46);
+    vec3 tq=tiltQ(q); vec2 uv=vec2(tq.x/1.56+.5, .5-(tq.y-1.4)/1.42);
     alb=pow(texture2D(uGlass,clamp(uv,0.,1.)).rgb,vec3(2.2)); }
-  if(id>3.5){ alb=vec3(.96,.93,.87); gloss=.6; vec2 uv=vec2(-1.);
+  if(id>3.5){ alb=vec3(.88,.86,.82); gloss=.7; vec2 uv=vec2(-1.);
     if(qn.y>.3&&qn.z>.3){ vec3 w=padLocal(q,sign(q.x)); uv=vec2(w.x/.72+.5, .5-w.z/.72); }
     if(uv.x>=0.&&uv.x<=1.&&uv.y>=0.&&uv.y<=1.){ vec4 t=texture2D(uPad,uv); alb=mix(alb,pow(t.rgb,vec3(2.2)),t.a); } }
   vec3 L=normalize(vec3(-.5,.8,.6));
@@ -569,10 +569,10 @@ vec3 shade(vec3 p, vec3 rd, float id){
   float dif=max(dot(n,L),0.);
   float fre=pow(1.-max(dot(n,-rd),0.),4.);
   vec3 refl=env(reflect(rd,n));
-  vec3 col=alb*(vec3(.10,.12,.17)*occ + dif*sh*vec3(1.,.95,.9)*.85);
+  vec3 col=alb*(vec3(.26,.28,.34)*occ + dif*sh*vec3(1.,.95,.9)*.8);
   col+=refl*gloss*(.10+.9*fre)*occ;
   col+=vec3(1.)*pow(max(dot(n,normalize(L-rd)),0.),110.)*sh*gloss*1.4;
-  if(id>2.5&&id<3.5) col=alb*1.4+refl*.07*occ+refl*.25*fre;          /* Display leuchtet leicht */
+  if(id>2.5&&id<3.5) col=alb*.95+refl*.07*occ+refl*.25*fre;          /* Display leuchtet leicht */
   return col; }
 
 void main(){
@@ -590,7 +590,7 @@ void main(){
   if(hit>0.){ col=shade(ro+rd*hit,rd,id); a=1.; }
   else {
     /* Boden: nur weicher Schatten (Rest bleibt transparent) */
-    float tg=(-1.95-ro.y)/rd.y;
+    float tg=(-1.65-ro.y)/rd.y;
     if(tg>0.){ vec3 pg=ro+rd*tg; float d=map(pg).x;
       float s=softShadow(pg+vec3(0.,.02,0.),normalize(vec3(-.5,.8,.6)));
       a=(.55*exp(-max(d,0.)*1.5)+.35*(1.-s))*(1.-smoothstep(3.5,6.5,length(pg.xz))); a=clamp(a,0.,.85); }
@@ -624,21 +624,24 @@ void main(){
     c.beginPath(); c.arc(cx-s*.55,cy,s*.1,0,7); c.fill();
     [.42,.82].forEach(r=>{ c.beginPath(); c.arc(cx-s*.55,cy,s*r,-.85,.85); c.stroke(); }); }
   function drawTextures(){
-    const g=document.createElement('canvas'); g.width=1024; g.height=1050; const c=g.getContext('2d');
-    const bg=c.createLinearGradient(0,0,1024,1050); bg.addColorStop(0,'#101923'); bg.addColorStop(1,'#1b2735');
-    c.fillStyle=bg; c.fillRect(0,0,1024,1050);
-    const glow=c.createRadialGradient(512,470,20,512,470,640); glow.addColorStop(0,'rgba(255,122,89,.22)'); glow.addColorStop(1,'rgba(255,122,89,0)');
-    c.fillStyle=glow; c.fillRect(0,0,1024,1050);
-    nfcIcon(c,590,320,160,'#ff7a59',24);
+    const g=document.createElement('canvas'); g.width=1024; g.height=940; const c=g.getContext('2d');
+    const bg=c.createLinearGradient(0,0,1024,940); bg.addColorStop(0,'#fcfbf8'); bg.addColorStop(1,'#e9e6de');
+    c.fillStyle=bg; c.fillRect(0,0,1024,940);
+    nfcIcon(c,590,290,150,'#2f9e4f',22);
     c.font='700 150px Fraunces, Georgia, serif';
     const w1=c.measureText('NF').width, w2=c.measureText('Connect').width, x0=512-(w1+w2)/2;
     c.textAlign='left'; c.textBaseline='alphabetic';
-    c.fillStyle='#f3efe7'; c.fillText('NF',x0,680); c.fillStyle='#ff7a59'; c.fillText('Connect',x0+w1,680);
-    c.textAlign='center'; c.fillStyle='#a9a79f'; c.font='600 44px Manrope, system-ui, sans-serif';
+    c.fillStyle='#1b2430'; c.fillText('NF',x0,620); c.fillStyle='#2f9e4f'; c.fillText('Connect',x0+w1,620);
+    c.textAlign='center'; c.fillStyle='#8a877e'; c.font='600 44px Manrope, system-ui, sans-serif';
     if('letterSpacing' in c) c.letterSpacing='10px';
-    c.fillText('TAP · ORDER · PAY',512,800);
+    c.fillText('TAP · ORDER · PAY',512,730);
     const p=document.createElement('canvas'); p.width=p.height=256; const d=p.getContext('2d');
-    nfcIcon(d,160,128,104,'#ff7a59',17);
+    nfcIcon(d,152,128,104,'#2f9e4f',17);
+    /* zwei Magnete in den Ecken wie am Prototyp */
+    [[52,52],[204,204]].forEach(([x,y])=>{
+      const m=d.createRadialGradient(x-4,y-4,2,x,y,16); m.addColorStop(0,'#e9e9e9'); m.addColorStop(1,'#7c8085');
+      d.fillStyle='#5d6166'; d.beginPath(); d.arc(x,y,17,0,7); d.fill();
+      d.fillStyle=m; d.beginPath(); d.arc(x,y,13,0,7); d.fill(); });
     makeTex(0,g); makeTex(1,p);
     gl.uniform1i(U('uGlass'),0); gl.uniform1i(U('uPad'),1);
   }
@@ -667,7 +670,7 @@ void main(){
     const w=stage.clientWidth, h=stage.clientHeight, W=Math.round(w*k), H=Math.round(h*k);
     if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; gl.viewport(0,0,W,H); }
     gl.uniform2f(uRes,W,H); gl.uniform1f(uRY,ry); gl.uniform1f(uEl,el);
-    gl.uniform1f(uD,11.8*Math.max(1,h/w));
+    gl.uniform1f(uD,10.5*Math.max(1,h/w));
     gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES,0,3);
   }
   frame();
