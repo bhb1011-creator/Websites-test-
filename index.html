@@ -6,406 +6,674 @@
 <meta name="theme-color" content="#0e141b">
 <script>document.documentElement.className+=" js"</script>
 <title>NFConnect – Tap. Order. Pay.</title>
-<meta name="description" content="NFConnect: Der NFC-Tag für Restauranttische. Bestellen, bezahlen und bewerten per Handy – ohne App.">
+<meta name="description" content="NFConnect ist der NFC-Aufsteller für den Restauranttisch: Handy dranhalten, bestellen, bezahlen, bei Google bewerten. 15 € pro Tag, 80 € im Monat, Website inklusive.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-/* ============ 1. Design-Tokens ============ */
+/* =====================================================================
+   NFConnect – ein Abend an Tisch 7, erzählt in Farbkapiteln.
+   Jedes Kapitel ist ein Feld in einer Farbe des Aufstellers:
+   Nacht (Gastraum), Grün (Rahmen), Papier (Druck), Tiefgrün, Minze.
+   ===================================================================== */
+
+/* ---------- 1. Tokens ---------- */
 :root{
-  --bg:#0e141b; --card:#161e27; --card-2:#1c2632;
-  --text:#f3efe7; --muted:#a9a79f; --line:rgba(243,239,231,.09);
-  --accent:#34c46a; --accent-2:#5ddc8a;
-  --green:#2f9e4f;               /* Farbe des echten Prototyps */
-  --radius:28px; --r-card:18px; --r-ctl:12px;
-  color-scheme:dark;
+  --night:#0e141b; --paper:#f2f1ee; --green:#34c46a; --deep:#143a26; --mint:#cfeedd; --frame:#2f9e4f;
+  --soft-on-light:#1f2a33;   /* zweite Textfarbe auf hellen Feldern */
+  --soft-on-dark:#cdd3cc;    /* zweite Textfarbe auf dunklen Feldern */
   --serif:"Fraunces",Georgia,serif;
   --sans:"Manrope",system-ui,sans-serif;
+  --m:clamp(16px,2.2vw,32px);                 /* ein Paar Außenränder für die ganze Seite */
+  /* fünf Schriftgrößen, mehr gibt es nicht */
+  --xl:clamp(50px,9vw,150px);
+  --h:clamp(34px,3.6vw,56px);
+  --l:clamp(20px,1.6vw,24px);
+  --t:18px;
+  --s:14px;
+  /* Bewegung */
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-expo:cubic-bezier(.16,1,.3,1);
+  --ease-io:cubic-bezier(.76,0,.24,1);
+  --ease-soft:cubic-bezier(.33,1,.68,1);
+  --t-press:140ms; --t-hover:180ms; --t-ui:240ms;
+  --cut:12px;                                  /* Schräge der Ordnerreiter – kehrt an jedem Knopf wieder */
 }
 
-/* ============ 2. Basis ============ */
+/* ---------- 2. Basis ---------- */
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.1;letter-spacing:-.01em;text-wrap:balance}
+html{scroll-behavior:smooth;background:var(--night)}
+body{background:var(--night);color:var(--paper);font:400 var(--t)/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.025em;line-height:1;text-wrap:balance}
+h3{font-family:var(--sans);font-size:var(--l);letter-spacing:-.01em;line-height:1.2}
 p{text-wrap:pretty}
-.tnum{font-variant-numeric:tabular-nums}
-::selection{background:var(--accent);color:#06210f}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
-html{scrollbar-color:#2a3441 var(--bg);caret-color:var(--accent)}
-a{color:inherit;text-decoration:none}
-button{font:inherit;cursor:pointer;border:0;color:inherit}
-.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
-section{padding:72px 0}
-#features{padding:96px 0 104px}
-#preise{padding-bottom:104px}
-.section-title{font-size:clamp(2rem,5vw,3.2rem);margin-bottom:16px}
-.section-sub{color:var(--muted);max-width:520px;margin-bottom:40px}
-.section-title{margin-bottom:12px}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+img{display:block;max-width:100%;height:auto}
+ul,ol{list-style:none}
+::selection{background:var(--green);color:var(--night)}
+:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:13px 28px;border-radius:999px;font-weight:700;transition:transform .25s ease-out,background-color .25s ease-out,border-color .25s ease-out,color .25s ease-out,box-shadow .25s ease-out}
-.btn-primary{background:var(--accent);color:#06210f;box-shadow:0 10px 30px -10px var(--accent)}
-.btn-primary:hover{transform:translateY(-2px);background:var(--accent-2)}
-.btn-ghost{border:1px solid var(--line);background:transparent}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+/* Felder: jedes Kapitel eine Farbe, Text immer in voller Tinte */
+.f-night{background:var(--night);color:var(--paper)}
+.f-green{background:var(--green);color:var(--night)}
+.f-paper{background:var(--paper);color:var(--night)}
+.f-deep {background:var(--deep); color:var(--paper)}
+.f-mint {background:var(--mint); color:var(--night)}
+.f-green .soft,.f-paper .soft,.f-mint .soft{color:var(--soft-on-light)}
+.f-night .soft,.f-deep .soft{color:var(--soft-on-dark)}
+.field{position:relative;min-height:90svh;padding:clamp(96px,10vw,150px) var(--m)}
 
-/* Scroll-Animation */
-.js .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
-.js .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}*{animation:none!important}}
+/* Knopf in Reiterform (obere Ecken schräg wie die Ordnerreiter) */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 30px;border:0;cursor:pointer;
+  font:600 var(--t)/1 var(--sans);text-decoration:none;white-space:nowrap;
+  clip-path:polygon(var(--cut) 0,calc(100% - var(--cut)) 0,100% 100%,0 100%);
+  transition:transform var(--t-press) var(--ease-out),background-color var(--t-hover) ease,color var(--t-hover) ease}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible{outline:3px solid currentColor;outline-offset:-8px}
+.btn-dark{background:var(--night);color:var(--paper)}
+.btn-green{background:var(--green);color:var(--night)}
+.btn-sm{min-height:44px;padding:0 22px;font-size:var(--s)}
+@media (hover:hover) and (pointer:fine){
+  .btn-dark:hover{background:#263241}
+  .btn-green:hover{background:#5ddc8a}
+}
 
-/* ============ 3. Navigation ============ */
-nav{position:sticky;top:0;z-index:50;background:rgba(14,20,27,.8);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
-.logo{font-family:var(--serif);font-size:1.4rem;font-weight:700}
-.logo span{color:var(--accent)}
-.nav-links{display:none;gap:28px;color:var(--muted);font-weight:600;font-size:.95rem}
-.nav-links a:hover{color:var(--text)}
-.nav-cta{min-height:44px;padding:10px 20px;font-size:.9rem}
-@media(min-width:820px){.nav-links{display:flex}}
+/* ---------- 3. Hero: Ordnerstapel ---------- */
+.hero{min-height:100svh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px var(--m) 0;min-height:64px}
+.wordmark{grid-column:2;font:700 var(--l)/1 var(--serif);letter-spacing:-.02em;text-decoration:none}
+.wordmark span{color:var(--green)}
+.topbar .btn{grid-column:3;justify-self:end}
+.hero h1{font-size:var(--xl);line-height:.95;letter-spacing:-.035em;text-align:center;margin:clamp(16px,3vh,40px) var(--m) 0}
+.hero-sub{font:500 var(--l)/1.35 var(--serif);letter-spacing:-.005em;text-align:center;max-width:46ch;margin:24px auto 0;padding:0 var(--m)}
 
-/* ============ 4. Hero ============ */
-.hero{padding:56px 0 80px;position:relative}
-.hero .wrap{display:grid;gap:48px;align-items:center;position:relative}
-.hero h1{font-size:clamp(2.8rem,8vw,4.6rem);margin-bottom:22px}
-
-.accent{color:var(--accent)}
-.hero p.lead{color:var(--muted);font-size:1.15rem;max-width:480px;margin-bottom:34px}
-.hero-actions{display:flex;flex-wrap:wrap;gap:14px}
-.hero-meta{display:flex;gap:28px;margin-top:40px;color:var(--muted);font-size:.9rem;flex-wrap:wrap}
-.hero-meta b{font-variant-numeric:tabular-nums;display:block;color:var(--text);font-family:var(--serif);font-size:1.5rem}
-.proto{position:relative;display:flex;flex-direction:column;align-items:center}
-.stage{position:relative;width:100%;max-width:440px;height:440px;perspective:1100px;cursor:grab;touch-action:pan-y;user-select:none}
+.folders{--off:clamp(36px,6.5vh,64px);--tab:clamp(32px,4.4vh,40px);
+  position:relative;flex:1 0 auto;width:86vw;margin:clamp(32px,5vh,64px) auto 0;min-height:calc(4*var(--off) + 200px)}
+.folder{position:absolute;left:0;right:0;bottom:0;top:calc(var(--i)*var(--off));display:block;text-decoration:none;
+  transition:transform var(--t-ui) var(--ease-out)}
+.tab{position:absolute;bottom:100%;left:var(--x);height:var(--tab);padding:0 30px;display:flex;align-items:center;
+  background:inherit;color:inherit;font:600 var(--t)/1 var(--sans);text-decoration:none;white-space:nowrap;
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 100%,0 100%)}
+.tab:focus-visible,.folder:focus-visible .tab{outline:3px solid currentColor;outline-offset:-7px}
+.folder:focus-visible{outline:none}
+@media (hover:hover) and (pointer:fine){ a.folder:hover{transform:translateY(-8px)} }
+.front{z-index:5}
+.front-in{position:relative;z-index:7;padding:32px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;max-width:60%}
+.front-price{font-weight:600}
+.stage{position:absolute;z-index:6;right:-3vw;width:min(29vw,420px);height:min(54svh,520px);top:calc(-1 * min(54svh,520px) + 210px);
+  cursor:grab;touch-action:pan-y;user-select:none}
 .stage:active{cursor:grabbing}
+
+/* Rückfall-Modell aus CSS-Quadern (nur ohne WebGL) */
 .world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
 .box{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
 .face{position:absolute;backface-visibility:hidden;display:grid;place-items:center;overflow:hidden}
-.floor{position:absolute;left:-210px;top:-150px;width:420px;height:300px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);transform:translateY(128px) rotateX(90deg)}
+.floor{position:absolute;left:-180px;top:-120px;width:360px;height:240px;border-radius:50%;background:rgba(0,0,0,.3);filter:blur(18px);transform:translateY(128px) rotateX(90deg)}
 .pad-ico{width:70%;height:70%}
-.pad-ico path,.pad-ico circle{stroke:#34c46a}
-.pad-ico .dot{fill:#34c46a;stroke:none}
-.glass-label{font-family:var(--serif);font-weight:700;color:#f3efe7;font-size:26px;letter-spacing:-.01em;text-align:center;line-height:1.1}
-.glass-label span{color:#34c46a}
-.glass-label small{display:block;font:600 11px var(--sans);letter-spacing:.2em;color:#a9a79f;margin-top:8px;text-transform:uppercase}
-.proto-hint{color:var(--muted);font-size:.82rem;margin-top:6px}
-.proto-waves{position:absolute;right:2%;top:6%;width:90px;pointer-events:none}
-.proto-waves path{fill:none;stroke:#34c46a;stroke-width:3;stroke-linecap:round;animation:pulse 2.4s ease-out infinite;opacity:0}
-.proto-waves path:nth-child(2){animation-delay:.4s}.proto-waves path:nth-child(3){animation-delay:.8s}
-@keyframes pulse{0%{opacity:0}30%{opacity:.9}100%{opacity:0}}
-@media(min-width:900px){.hero .wrap{grid-template-columns:1.1fr .9fr}}
+.pad-ico path,.pad-ico circle{stroke:var(--frame)}
+.pad-ico .dot{fill:var(--frame);stroke:none}
+.glass-label{font:700 26px/1.1 var(--serif);color:var(--night);text-align:center}
+.glass-label span{color:var(--frame)}
 
-/* ============ 5. So funktioniert’s ============ */
-.steps{list-style:none;display:grid;border-top:1px solid var(--line)}
-.step{padding:30px 0;border-bottom:1px solid var(--line)}
-.step-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
-.step .num{font-family:var(--serif);font-size:3rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
-.ico{width:28px;height:28px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.step h3{font-size:1.4rem;margin-bottom:8px}
-.step p{color:var(--muted);max-width:34ch}
-@media(min-width:800px){
-  .steps{grid-template-columns:repeat(3,1fr)}
-  .step{padding:34px 32px 34px 0;border-bottom:0}
-  .step + .step{padding-left:32px;border-left:1px solid var(--line)}
-}
+/* ---------- 4. So geht’s: Kacheln, die wachsen ---------- */
+.so{padding-top:clamp(96px,9vw,140px)}
+.so h2{position:absolute;left:var(--m);top:clamp(96px,9vw,140px);width:calc(58.33% - var(--m));font-size:var(--h)}
+.so-steps{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:10px;align-items:end}
+.stp:nth-child(1){grid-column:1 / 4}
+.stp:nth-child(2){grid-column:4 / 8}
+.stp:nth-child(3){grid-column:8 / 13}
+.tile{display:grid;place-items:center;overflow:hidden}
+.stp:nth-child(1) .tile{height:30vh;font-size:12px}
+.stp:nth-child(2) .tile{height:44vh;font-size:14px}
+.stp:nth-child(3) .tile{height:60vh;font-size:17px}
+.stp h3{margin-top:20px}
+.stp p{margin-top:8px;max-width:36ch}
 
-/* ============ 6. Interaktive Demo ============ */
+/* Bildschirm-Fragmente des Produkts (data-ui): eigene Ränder und Ecken erlaubt */
+.ui{font-family:var(--sans);color:#1b1f24;background:#fff;border-radius:1.4em;padding:1.2em;width:20em;max-width:calc(100% - 24px);line-height:1.35}
+.ui small{display:block;color:#5d646b;font-size:.85em}
+.ui b{font-weight:600}
+.ui .row{display:flex;align-items:center;gap:.8em}
+.ui .nfc{width:2.6em;height:2.6em;border-radius:.7em;background:#e4f5ea;display:grid;place-items:center;flex:none}
+.ui .nfc svg{width:1.6em;height:1.6em}
+.ui .ui-btn{display:block;margin-top:1em;background:var(--green);color:var(--night);border-radius:.8em;padding:.75em;text-align:center;font-weight:600}
+.ui .dish{display:flex;align-items:center;gap:.8em;padding:.6em 0}
+.ui .dish img{width:3.2em;height:3.2em;border-radius:.7em;object-fit:cover;flex:none}
+.ui .dish span{flex:1}
+.ui .dish .plus{width:2.2em;height:2.2em;border-radius:50%;background:var(--green);color:var(--night);display:grid;place-items:center;font-weight:700;flex:none}
+.ui .check{width:3.4em;height:3.4em;border-radius:50%;background:var(--frame);color:#fff;display:grid;place-items:center;font-size:1.4em;margin:0 auto .5em}
+.ui .big{font:600 2em/1.1 var(--serif);text-align:center}
+.ui .stars{color:#f2b705;font-size:1.6em;display:flex;justify-content:center;gap:.1em;margin:.4em 0}
+.ui .g{display:flex;justify-content:center;gap:.5em;background:#efece5;border-radius:999px;padding:.6em 1em;font-weight:600;margin-top:.6em}
+.ui .g i{font-style:normal;font-weight:700;color:#4285f4}
 
-.demo{background:var(--card)}
-.demo .wrap{display:grid;gap:56px;align-items:center}
-.demo-text ul{list-style:none;margin-top:24px;display:grid;gap:12px;color:var(--muted)}
-.demo-text li::before{content:"✓";color:var(--accent);font-weight:800;margin-right:10px}
-.phone-stage{display:flex;justify-content:center}
-.phone{width:310px;height:620px;background:#05080c;border-radius:46px;padding:11px;box-shadow:0 0 0 2px #2a3441,0 50px 80px -20px rgba(0,0,0,.7)}
-.screen{background:#f7f3ec;color:#1b1b1b;border-radius:36px;height:100%;overflow:hidden;position:relative;display:flex;flex-direction:column}
-.notch{width:90px;height:22px;background:#05080c;border-radius:0 0 16px 16px;margin:0 auto;flex:none}
+/* ---------- 5. Ausprobieren: das Handy, groß ---------- */
+.demo{min-height:92svh;overflow:hidden;transition:background-color 700ms var(--ease-io),color 700ms var(--ease-io)}
+.demo.is-paid{background:var(--night);color:var(--paper)}
+.demo.is-paid .soft{color:var(--soft-on-dark)}
+.demo-copy{max-width:30rem}
+.demo h2{font-size:var(--h)}
+.demo-copy p{margin-top:16px}
+.phone-wrap{position:absolute;left:54%;top:clamp(72px,9vw,120px)}
+.phone{width:310px;height:620px;background:#222c37;border-radius:46px;padding:11px}
+.screen{background:#f3f4f2;color:#1b1b1b;border-radius:36px;height:100%;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.notch{width:90px;height:22px;background:#222c37;border-radius:0 0 16px 16px;margin:0 auto;flex:none}
 .app-head{padding:10px 20px 14px;flex:none}
-.app-head small{color:#888;font-weight:600;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
-.app-head h4{font-family:var(--serif);font-size:1.4rem}
+.app-head small{color:#5d646b;font-weight:600;font-size:var(--s)}
+.app-head h4{font:600 var(--l)/1.15 var(--serif)}
 .view{flex:1;overflow-y:auto;padding:0 16px 16px;display:none;flex-direction:column;gap:10px}
 .view.active{display:flex}
 .view::-webkit-scrollbar{width:0}
-.dish{background:#fff;border-radius:16px;padding:12px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.dish .emoji{font-size:1.8rem;width:46px;height:46px;border-radius:12px;background:#e4f5ea;display:grid;place-items:center;flex:none}
-.dish .info{flex:1;min-width:0}
-.dish b{display:block;font-size:.95rem;line-height:1.2;font-variant-numeric:tabular-nums}
-.dish span{font-size:.8rem;color:#666}
-.add{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.3rem;line-height:1;flex:none;transition:transform .25s ease-out,background-color .25s ease-out,border-color .25s ease-out,color .25s ease-out,box-shadow .25s ease-out}
-.add:hover{transform:scale(1.1)}.add:active{transform:scale(.9)}
-.cart-bar{flex:none;margin:0 16px 16px;background:#161e27;color:#f3efe7;border-radius:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.92rem}
-.cart-bar:disabled{opacity:.4;cursor:not-allowed}
-.cart-bar .badge{background:var(--accent);color:#06210f;border-radius:999px;padding:2px 10px;font-size:.78rem;margin-right:8px}
-.line{display:flex;align-items:center;justify-content:space-between;font-size:.88rem;background:#fff;border-radius:14px;padding:10px 14px}
+.phone .dish{display:flex;align-items:center;gap:12px;padding:6px 0}
+.phone .dish img{width:52px;height:52px;border-radius:12px;object-fit:cover;flex:none}
+.phone .dish .info{flex:1;min-width:0}
+.phone .dish b{display:block;font-size:var(--s);line-height:1.2;font-variant-numeric:tabular-nums}
+.phone .dish span{font-size:var(--s);color:#5d646b}
+.phone .dish .pr{color:#1d7a3c;font-size:var(--s)}
+.add{width:44px;height:44px;border-radius:50%;border:0;background:var(--green);color:var(--night);font-size:var(--l);line-height:1;flex:none;cursor:pointer;transition:transform var(--t-press) var(--ease-out)}
+.add:active{transform:scale(.9)}
+.cart-bar{flex:none;margin:0 16px 16px;background:#161e27;color:#f3efe7;border:0;border-radius:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:var(--s);cursor:pointer}
+.cart-bar:disabled{opacity:.45;cursor:not-allowed}
+.cart-bar .badge{background:var(--green);color:var(--night);border-radius:999px;padding:2px 10px;font-size:var(--s);margin-right:8px}
+.line{display:flex;align-items:center;justify-content:space-between;font-size:var(--s);background:#fff;border-radius:14px;padding:10px 14px}
 .qty{display:flex;align-items:center;gap:8px}
-.qty button{width:36px;height:36px;border-radius:50%;background:#eee;font-weight:800}
-.total{display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;padding:10px 4px}
-.pay-btn{background:var(--accent);color:#06210f;padding:15px;border-radius:16px;font-weight:800}
-.back{background:none;color:#666;font-size:.85rem;font-weight:700;text-align:left;padding:10px 4px;min-height:44px}
-.center{align-items:center;justify-content:center;text-align:center;gap:14px}
-.check{width:72px;height:72px;border-radius:50%;background:#2f9e4f;color:#fff;display:grid;place-items:center;font-size:2.2rem;animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
-@keyframes pop{from{transform:scale(0)}}
-.stars{display:flex;gap:6px;font-size:1.8rem;color:#ddd}
-.stars button{background:none;min-width:44px;min-height:44px;font-size:1.8rem;color:#ddd;transition:transform .25s ease-out,background-color .25s ease-out,border-color .25s ease-out,color .25s ease-out,box-shadow .25s ease-out}
-.stars button.on{color:#fbbc04}
-.g-btn{background:#fff;border:1.5px solid #ddd;border-radius:999px;padding:12px 20px;font-weight:700;font-size:.88rem;display:flex;gap:8px;align-items:center}
-.g-btn b{background:conic-gradient(#ea4335 0 25%,#fbbc04 0 50%,#34a853 0 75%,#4285f4 0);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1.1rem}
-.note{font-size:.78rem;color:#6b6b6b}
-@media(min-width:900px){.demo .wrap{grid-template-columns:1fr 1fr}}
+.qty button{width:36px;height:36px;border-radius:50%;border:0;background:#ece8df;font-weight:700;cursor:pointer}
+.total{display:flex;justify-content:space-between;font-weight:700;font-size:var(--t);padding:10px 4px;font-variant-numeric:tabular-nums}
+.pay-btn{background:var(--green);color:var(--night);border:0;padding:15px;border-radius:16px;font-weight:700;cursor:pointer}
+.back{background:none;border:0;color:#3d454c;font-size:var(--s);font-weight:600;text-align:left;padding:10px 4px;min-height:44px;cursor:pointer}
+.center{align-items:center;justify-content:center;text-align:center;gap:12px}
+.ok{width:72px;height:72px;border-radius:50%;background:var(--frame);color:#fff;display:grid;place-items:center;font-size:34px}
+.view.active .ok{animation:pop .5s var(--ease-out)}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.phone .stars{display:flex;gap:2px}
+.phone .stars button{background:none;border:0;min-width:44px;min-height:44px;font-size:30px;color:#cfcac0;cursor:pointer;transition:color var(--t-hover) ease,transform var(--t-press) var(--ease-out)}
+.phone .stars button.on{color:#f2b705}
+.phone .stars button:active{transform:scale(.88)}
+.g-btn{background:#e9e7e1;border:0;border-radius:999px;padding:12px 20px;font-weight:600;font-size:var(--s);display:flex;gap:8px;align-items:center;text-decoration:none}
+.g-btn b{color:#4285f4}
+.note{font-size:var(--s);color:#4f565c}
 
-/* ============ 7. Features (ungleich große Karten) ============ */
-.features{display:grid;gap:14px}
-.feature{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:28px;transition:transform .25s ease-out,background-color .25s ease-out,border-color .25s ease-out}
-.feature:hover{transform:translateY(-3px);background:var(--card-2);border-color:rgba(52,196,106,.35)}
-.feature .ico{margin-bottom:18px}
-.feature h3{font-size:1.3rem;margin-bottom:8px}
-.feature p{color:var(--muted)}
-.feature.lead{background:rgba(52,196,106,.08);border-color:rgba(52,196,106,.28)}
-.feature.lead h3{font-size:clamp(1.6rem,3vw,2.2rem)}
-.feature.lead p{max-width:44ch;font-size:1.05rem}
-@media(min-width:760px){
-  .features{grid-template-columns:repeat(6,1fr)}
-  .f1{grid-column:span 4}.f2{grid-column:span 2}
-  .f3,.f4,.f5{grid-column:span 2}
-  .f6{grid-column:span 6;display:flex;gap:24px;align-items:center}
-  .f6 .ico{margin:0}
+/* ---------- 6. Vorteile: Foto mit Zahlenkacheln ---------- */
+.stats{padding-top:clamp(96px,10vw,150px)}
+.stats h2{font-size:var(--h);margin:0 var(--m) 40px}
+.mosaic{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);grid-template-rows:1fr 1fr;height:66vw;max-height:1100px}
+.m-photo{grid-row:1 / 3;overflow:hidden}
+.m-photo img{width:100%;height:100%;object-fit:cover}
+.m-tile{padding:28px}
+.fig{font:600 var(--xl)/.9 var(--serif);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.m-tile .cap{margin-top:16px;max-width:26ch}
+
+/* ---------- 7. Was drin ist: Exponate auf Farbkacheln ---------- */
+.drin{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:10px;align-items:start}
+.drin-intro{grid-column:1 / 4;padding-right:24px}
+.drin h2{font-size:var(--h)}
+.drin-intro p{margin-top:16px;max-width:30ch}
+.specimens{grid-column:4 / 13;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 10px}
+.sp-tile{aspect-ratio:4 / 5;display:grid;place-items:center;overflow:hidden;font-size:12px}
+.sp.wide{grid-column:span 2}
+.sp.wide .sp-tile{aspect-ratio:auto;height:100%;min-height:0}
+.sp:nth-child(1),.sp:nth-child(2){display:flex;flex-direction:column}
+.sp.wide .sp-tile{flex:1}
+.sp-tile img{height:72%;width:auto;object-fit:contain}
+.sp-tile img.fill{width:100%;height:100%;object-fit:cover}
+.sp h3{margin-top:16px}
+.sp p{margin-top:6px}
+.ui-site{width:30em;padding:0;overflow:hidden}
+.ui-site .bar{display:flex;align-items:center;gap:.8em;padding:.7em 1em;background:#ece8df}
+.ui-site .bar span{flex:1;background:#fff;border-radius:.5em;padding:.35em .8em;color:#3d454c;font-size:.9em}
+.ui-site .bar i{width:.7em;height:.7em;border-radius:50%;background:#c9c3b8;flex:none}
+.ui-site .body{padding:1.2em 1.4em 1.4em}
+.ui-site .body b.title{display:block;font:600 1.9em/1.1 var(--serif);margin:.1em 0 .6em}
+
+/* ---------- 8. Für wen: eine Zeile pro Ort, mit Vorschau ---------- */
+.wen h2{font-size:var(--h);margin-bottom:56px}
+.index{position:relative}
+.index__row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 24px;padding:.06em 0;text-decoration:none;
+  transition:opacity var(--t-hover) ease,color var(--t-hover) ease}
+.index__name{font:600 var(--xl)/.95 var(--serif);letter-spacing:-.035em}
+.index__fact{max-width:17ch;text-align:right;font-size:var(--t)}
+.index__thumb{order:-1;flex-basis:100%;width:100%;aspect-ratio:3 / 2;object-fit:cover;margin:28px 0 12px}
+.index__frame{display:none}
+@media (min-width:901px){
+  .index__thumb{display:none}
+  .index__list{max-width:100%}
+  .index__row:hover,.index__row:focus-visible,.index__row.is-on{color:var(--green)}
+  .index__list:has(.index__row:hover,.index__row:focus-visible) .index__row:not(:hover,:focus-visible){opacity:.4}
+  .index__frame{display:block;position:absolute;top:0;left:52%;width:22vw;aspect-ratio:4 / 3;z-index:1;pointer-events:none;
+    clip-path:inset(100% 0 0 0);transition:clip-path 320ms var(--ease-out),transform 360ms var(--ease-out)}
+  .index__frame.is-open{clip-path:inset(0)}
+  .index__frame img{width:100%;height:100%;object-fit:cover}
 }
 
-/* ============ 8. Vorteile ============ */
-.benefits{display:grid;gap:40px}
-.benefit-lead .big{font-family:var(--serif);font-size:clamp(3.4rem,10vw,6rem);line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
-.benefit-lead p{color:var(--muted);margin-top:12px;max-width:22ch}
-.benefit-list{list-style:none;border-top:1px solid var(--line)}
-.benefit-list li{padding:24px 0;border-bottom:1px solid var(--line)}
-.benefit-list h3{font-size:1.25rem;margin-bottom:6px}
-.benefit-list p{color:var(--muted)}
-@media(min-width:860px){.benefits{grid-template-columns:1fr 1.25fr;gap:80px;align-items:start}}
-.fine{color:var(--muted);font-size:.8rem;margin-top:20px}
+/* ---------- 9. Preise: das Ticket ---------- */
+.preise{display:grid;place-items:center}
+.ticket{position:relative;width:min(72vw,1100px);aspect-ratio:2.3 / 1;display:grid;grid-template-columns:6fr 28px 4fr;background:var(--night);color:var(--paper)}
+.t-main{padding:40px;display:flex;flex-direction:column;gap:24px}
+.t-main h2{font-size:var(--h)}
+.calc{display:flex;align-items:center;gap:14px;font-weight:600}
+.calc button{width:44px;height:44px;border:0;cursor:pointer;background:var(--paper);color:var(--night);font-size:var(--l);font-weight:700;
+  clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 100%,0 100%);transition:transform var(--t-press) var(--ease-out),background-color var(--t-hover) ease}
+.calc button:active{transform:scale(.92)}
+.calc button:focus-visible{outline:3px solid var(--night);outline-offset:-7px}
+@media (hover:hover) and (pointer:fine){.calc button:hover{background:#fff}}
+.calc output{min-width:2.2ch;text-align:center;font:600 var(--l)/1 var(--sans);font-variant-numeric:tabular-nums}
+.t-lines{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px 28px}
+.t-stub{padding:40px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.t-price{font:600 var(--xl)/.9 var(--serif);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.t-per{margin-top:8px}
+.t-once{margin-top:4px;font-variant-numeric:tabular-nums}
+.t-stub .btn{width:100%;margin-top:28px}
+/* Perforation: eine Spalte mit Punkten, oben und unten je eine Kerbe in der Farbe des Grundes */
+.perf{position:relative;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='14'%3E%3Ccircle cx='3' cy='3' r='3' fill='%2334c46a'/%3E%3C/svg%3E") 50% 26px / 6px 14px repeat-y;background-clip:content-box;padding:26px 0}
+.perf::before,.perf::after{content:"";position:absolute;left:0;width:28px;height:28px;border-radius:50%;background:var(--green)}
+.perf::before{top:-14px}.perf::after{bottom:-14px}
 
-/* ============ 9. Preise ============ */
-.pricing{display:grid;gap:20px}
-.price{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:38px 32px;display:flex;flex-direction:column;transition:transform .25s ease-out,background-color .25s ease-out,border-color .25s ease-out,color .25s ease-out,box-shadow .25s ease-out}
-.price:hover{transform:translateY(-3px)}
-.price.pro{border-color:var(--accent);background:linear-gradient(160deg,#1d2530,var(--card))}
-.price .tag{align-self:flex-start;background:rgba(52,196,106,.14);color:var(--accent);font-size:.75rem;font-weight:700;padding:5px 12px;border-radius:999px;margin-bottom:18px}
-.price .amount{font-variant-numeric:tabular-nums;font-family:var(--serif);font-size:3.6rem;line-height:1;margin:10px 0 4px}
-.price .amount small{font-size:1rem;font-family:var(--sans);color:var(--muted);font-weight:500}
-.price ul{list-style:none;margin:24px 0 30px;display:grid;gap:10px;color:var(--muted);flex:1}
-.price li::before{content:"✓";color:var(--accent);margin-right:10px;font-weight:800}
-@media(min-width:700px){.pricing{grid-template-columns:1fr 1fr}}
+/* ---------- 10. Kontakt: Karte auf dem Foto ---------- */
+.kontakt{position:relative;min-height:100svh;overflow:hidden;background:var(--night)}
+.k-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:28% 50%;display:block}
+.k-card{position:relative;margin:60px var(--m) 60px auto;width:min(460px,100%);padding:36px}
+.k-card h2{font-size:var(--h)}
+.k-card > p{margin-top:14px}
+.k-form{display:grid;gap:12px;margin-top:24px}
+.k-form label{display:grid;gap:4px;font-size:var(--s);font-weight:600}
+.k-form input,.k-form select{height:52px;padding:0 14px;border:0;border-bottom:2px solid #c9c3b8;background:#fff;color:var(--night);border-radius:0}
+.k-form input:focus,.k-form select:focus{outline:2px solid var(--frame);outline-offset:0;border-bottom-color:var(--frame)}
+.k-form .btn{margin-top:8px}
+.k-note{font-size:var(--s)}
+.form-ok{padding:24px 0 8px}
+.form-ok h3{font:600 var(--h)/1 var(--serif)}
+.form-ok p{margin-top:10px}
 
-/* ============ 10. Kontakt ============ */
-.contact-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(28px,5vw,60px);display:grid;gap:36px}
-form{display:grid;gap:14px}
-label{font-size:.82rem;font-weight:700;color:var(--muted)}
-input,select{width:100%;margin-top:6px;padding:14px 16px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;transition:transform .25s ease-out,background-color .25s ease-out,border-color .25s ease-out,color .25s ease-out,box-shadow .25s ease-out}
-input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(52,196,106,.18)}
-.form-ok{display:none;text-align:center;padding:30px 0}
-.form-ok .check{margin:0 auto 16px}
-@media(min-width:860px){.contact-box{grid-template-columns:1fr 1fr;align-items:center}}
+/* ---------- 11. Fuß: das Zeichen, groß gebaut ---------- */
+.foot{padding:48px var(--m) 32px}
+.mark{display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px;height:clamp(200px,34svh,340px)}
+.blk{flex:1 1 0;min-width:0;height:var(--hgt);display:flex;align-items:flex-end;justify-content:center;padding-bottom:.08em;
+  font:600 var(--xl)/.8 var(--serif);letter-spacing:-.02em;color:var(--paper)}
+.blk:nth-child(3n+1){background:var(--night)}
+.blk:nth-child(3n+2){background:var(--frame)}
+.blk:nth-child(3n){background:var(--deep)}
+.foot-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:10px;margin-top:56px}
+.foot-nav{grid-column:1 / 9;display:grid;grid-template-columns:repeat(4,1fr);gap:8px 10px}
+.foot-nav a{font-size:var(--s);text-decoration:underline;text-decoration-color:transparent;text-underline-offset:.25em;transition:text-decoration-color var(--t-hover) ease}
+.foot-nav a:hover{text-decoration-color:currentColor}
+.foot-about{grid-column:9 / 13}
+.credits{margin-top:48px;font-size:var(--s);max-width:72ch}
+.credits summary{cursor:pointer;font-weight:600;min-height:44px;display:inline-flex;align-items:center}
+.credits p{margin-top:8px}
+.credits a{text-underline-offset:.2em}
+.foot-last{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:28px;font-size:var(--s)}
 
-/* ============ 11. Footer ============ */
-footer{border-top:1px solid var(--line);padding:44px 0;color:var(--muted);font-size:.9rem}
-footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
-footer .logo{font-size:1.6rem;color:var(--text)}
+/* ---------- 12. Bewegung ---------- */
+@media (prefers-reduced-motion:no-preference){
+  /* Laden: Titel steigt aus der Maske, dann rutschen die Ordner einer nach dem anderen hoch */
+  .js .hero h1{animation:rise 1000ms var(--ease-expo) both}
+  .js .hero-sub{animation:fade 900ms var(--ease-out) 180ms both}
+  .js .folder{animation:slide 900ms var(--ease-expo) both;animation-delay:calc(320ms + var(--i) * 80ms)}
+  .js .stage{animation:fade 1200ms var(--ease-out) 700ms both}
+  @keyframes rise{from{transform:translateY(.35em);opacity:0;clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 -10% 0)}}
+  @keyframes fade{from{opacity:0;transform:translateY(16px)}}
+  @keyframes slide{from{transform:translateY(60%)}}
+  /* Auftritt der Teile jedes Kapitels, gestaffelt */
+  .js [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity 700ms var(--ease-out),transform 900ms var(--ease-out);transition-delay:var(--d,0ms)}
+  .js [data-reveal].is-in{opacity:1;transform:none}
+  /* Foto öffnet sich wie ein Verschluss */
+  .js .shutter{clip-path:inset(0 0 100% 0);transition:clip-path 900ms var(--ease-io)}
+  .js .shutter img{transform:scale(1.12);transition:transform 1500ms var(--ease-soft)}
+  .js .is-in .shutter{clip-path:inset(0)}
+  .js .is-in .shutter img{transform:none}
+  /* das bewegte Bild: Kerzenlicht, ganz langsam */
+  .t-once,.t-price{transition:opacity 200ms ease}
+  .t-once.tick{opacity:.35}
+}
+
+/* ---------- 13. Tablet ---------- */
+@media (max-width:1100px){
+  .drin-intro{grid-column:1 / 13;margin-bottom:40px}
+  .specimens{grid-column:1 / 13}
+  .phone-wrap{left:auto;right:var(--m)}
+  .demo-copy{max-width:min(30rem,calc(100% - 360px))}
+}
+@media (max-width:900px){
+  .so-steps{grid-template-columns:1fr;row-gap:28px}
+  .stp:nth-child(n){grid-column:1}
+  .so h2{position:static;width:auto;margin-bottom:32px}
+  .stp:nth-child(1) .tile{height:36vw}
+  .stp:nth-child(2) .tile{height:50vw}
+  .stp:nth-child(3) .tile{height:64vw}
+  .ticket{width:100%;aspect-ratio:auto;grid-template-columns:1fr;grid-template-rows:auto auto}
+  .perf{height:28px;padding:0 26px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='6'%3E%3Ccircle cx='3' cy='3' r='3' fill='%2334c46a'/%3E%3C/svg%3E") 26px 50% / 14px 6px repeat-x;background-clip:content-box}
+  .perf::before,.perf::after{top:0;bottom:auto}
+  .perf::before{left:-14px}.perf::after{left:auto;right:-14px}
+  .t-main{padding:32px 24px 40px}
+  .t-stub{padding:40px 24px 32px}
+  .t-lines{grid-template-columns:1fr}
+  .mosaic{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto;height:auto;max-height:none}
+  .m-photo{grid-column:1 / 3;grid-row:1;aspect-ratio:4 / 3}
+  .m-tile{min-height:50vw;padding:16px}
+
+  .m-tile .cap{margin-top:10px}
+  .foot-nav{grid-column:1 / 13;grid-template-columns:repeat(2,1fr)}
+  .foot-about{grid-column:1 / 13;margin-top:28px}
+}
+
+/* ---------- 14. Handy ---------- */
+@media (max-width:700px){
+  .topbar .btn{padding:0 16px}
+  .hero-sub{font-size:var(--t);max-width:none}
+  .folders{--off:52px;--tab:32px;width:100%}
+  .tab{font-size:var(--s);padding:0 20px;left:calc(var(--i) * 5%)}
+  .front-in{max-width:none;padding:44px 16px 24px;flex-direction:column;align-items:stretch}
+  .front-in .btn{width:100%}
+  .stage{right:-6vw;width:56vw;height:40svh;top:calc(-40svh + 30px)}
+  .so h2{position:static;width:auto;margin-bottom:32px}
+  .so-steps{grid-template-columns:1fr;row-gap:28px}
+  .stp:nth-child(n){grid-column:1}
+  .stp:nth-child(1) .tile{height:44vw}
+  .stp:nth-child(2) .tile{height:62vw}
+  .stp:nth-child(3) .tile{height:82vw;font-size:14px}
+  .stp:nth-child(2) .tile{font-size:12px}
+  .stp:nth-child(1) .tile{font-size:11px}
+  .stp h3{margin-top:14px}
+  .demo{min-height:auto;padding-bottom:64px}
+  .demo-copy{max-width:none}
+  .phone-wrap{position:static;margin-top:36px;display:flex;justify-content:center}
+  .phone{width:min(310px,100%)}
+  .specimens{grid-template-columns:1fr 1fr;gap:28px 8px}
+  .sp.wide{grid-column:1 / 3;order:-1}
+  .sp.wide .sp-tile{aspect-ratio:8 / 5;flex:none}
+  .sp-tile{font-size:9px}
+  .sp.wide .sp-tile{font-size:9px}
+  .index__row{display:block}
+  .index__fact{display:block;text-align:left;max-width:none;margin:6px 0 22px}
+    .k-photo{position:relative;height:56svh;inset:auto}
+  .kontakt{min-height:auto}
+  .k-card{margin:-56px 12px 0;width:auto;padding:28px 20px}
+  .mark{height:auto}
+  .blk{flex:0 0 calc((100% - 16px) / 5);height:calc(var(--hgt) * 1.2);min-height:84px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:1ms!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
 
 <body>
 
-<!-- ============ NAVIGATION ============ -->
-<nav>
-  <div class="wrap">
-    <a href="#top" class="logo">NF<span>Connect</span></a>
-    <div class="nav-links">
-      <a href="#so">So funktioniert’s</a>
-      <a href="#demo">Demo</a>
-      <a href="#features">Features</a>
-      <a href="#preise">Preise</a>
-    </div>
-    <a href="#kontakt" class="btn btn-primary nav-cta">Gratis testen</a>
+<!-- ================= 1. HERO: Ordnerstapel, jeder Ordner ein Kapitel ================= -->
+<header class="hero f-night" id="top">
+  <div class="topbar">
+    <a class="wordmark" href="#top" aria-label="NFConnect – zum Seitenanfang">NF<span>Connect</span></a>
+    <a class="btn btn-green btn-sm" href="#kontakt">Gratis testen</a>
   </div>
-</nav>
 
-<!-- ============ 1. HERO ============ -->
-<header class="hero" id="top">
-  <div class="wrap">
-    <div class="reveal">
-      <h1>Tap. Order. <span class="accent">Pay.</span></h1>
-      <p class="lead">Ein Tag auf dem Tisch, Handy dranhalten – und der Gast bestellt, bezahlt und bewertet. Ganz ohne App, ohne Warten.</p>
-      <div class="hero-actions">
-        <a href="#kontakt" class="btn btn-primary">Gratis testen →</a>
-        <a href="#demo" class="btn btn-ghost">Demo ansehen</a>
-      </div>
-      <div class="hero-meta">
-        <div><b>15 €</b>pro NFC-Tag</div>
-        <div><b>80 €</b>pro Monat</div>
-        <div><b>0</b>Apps nötig</div>
-      </div>
-    </div>
+  <h1>Tap. Order. Pay.</h1>
+  <p class="hero-sub">Der NFC-Aufsteller für den Restauranttisch. Gäste halten ihr Handy dran, bestellen, zahlen und bewerten dich bei Google – ohne App.</p>
 
-    <!-- 3D-Modell des NFConnect-Aufstellers (wird per JS aus Quadern gebaut) -->
-    <div class="proto reveal">
-      <div class="stage" id="stage" aria-label="Drehbares 3D-Modell des NFConnect-Tischaufstellers" role="img">
+  <nav class="folders" aria-label="Kapitel">
+    <a class="folder f-green" href="#preise"   style="--i:0;--x:0%"><span class="tab">Preise</span></a>
+    <a class="folder f-mint"  href="#drin"     style="--i:1;--x:11%"><span class="tab">Was drin ist</span></a>
+    <a class="folder f-deep"  href="#vorteile" style="--i:2;--x:25%"><span class="tab">Vorteile</span></a>
+    <a class="folder f-paper" href="#demo"     style="--i:3;--x:36%"><span class="tab">Ausprobieren</span></a>
+    <div class="folder f-green front" style="--i:4;--x:0%">
+      <a class="tab" href="#so">So geht’s</a>
+      <div class="front-in">
+        <a class="btn btn-dark" href="#kontakt">Gratis-Testpaket anfordern</a>
+        <p class="front-price">15 € pro Tag · 80 € im Monat · Website inklusive</p>
+      </div>
+      <!-- Der Aufsteller als echtes 3D-Modell (WebGL), er steht auf dem vorderen Ordner -->
+      <div class="stage" id="stage" role="img" aria-label="Drehbares 3D-Modell des NFConnect-Aufstellers: weißes Gehäuse, grüner Rahmen, zwei NFC-Tags auf einer 45-Grad-Schräge">
         <div class="world" id="world"></div>
-        <svg class="proto-waves" viewBox="0 0 90 120" aria-hidden="true"><path d="M20 30 q22 30 0 60"/><path d="M40 18 q36 42 0 84"/><path d="M60 6 q50 54 0 108"/></svg>
       </div>
-      <p class="proto-hint">↔ Ziehen zum Drehen</p>
     </div>
-  </div>
+  </nav>
 </header>
 
-<!-- ============ 2. SO FUNKTIONIERT’S ============ -->
-<section id="so">
-  <div class="wrap">
-    <h2 class="section-title">So funktioniert’s</h2>
-    <p class="section-sub">Der Gast braucht nur sein Handy. Keine App, kein Login.</p>
-    <ol class="steps">
-      <li class="step"><div class="step-head"><span class="num">1</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4.5a10 10 0 0 1 0 15M12 7.5a6 6 0 0 1 0 9"/><circle cx="5" cy="12" r="1.3"/></svg></div><h3>Tag scannen</h3><p>Handy an den NFC-Tag auf dem Tisch halten. Die Website des Restaurants öffnet sich sofort.</p></li>
-      <li class="step"><div class="step-head"><span class="num">2</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-1.6 8H8z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="19" r="1.3"/><circle cx="18" cy="19" r="1.3"/></svg></div><h3>Bestellen</h3><p>Speisekarte durchstöbern, Gerichte in den Warenkorb legen – direkt vom Platz aus.</p></li>
-      <li class="step"><div class="step-head"><span class="num">3</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10.5h18"/><path d="m12 2.5.9 1.8 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z"/></svg></div><h3>Bezahlen und bewerten</h3><p>Per Handy zahlen und danach mit einem Tipp das Restaurant bei Google bewerten.</p></li>
-    </ol>
-  </div>
-</section>
-
-<!-- ============ 3. INTERAKTIVE DEMO ============ -->
-<section class="demo" id="demo">
-  <div class="wrap">
-    <div class="demo-text reveal">
-      <h2 class="section-title">Probier’s selbst aus.</h2>
-      <p class="section-sub" style="margin-bottom:0">So sieht es für deinen Gast aus. Lege Gerichte in den Warenkorb und tippe auf „Bezahlen“.</p>
-      <ul>
-        <li>Alles läuft im Browser des Gastes</li>
-        <li>Zahlung hier nur simuliert – es wird nichts abgebucht</li>
-        <li>Am Ende: direkter Link zur Google-Bewertung</li>
-      </ul>
-    </div>
-
-    <div class="phone-stage reveal">
-      <div class="phone"><div class="screen">
-        <div class="notch"></div>
-        <div class="app-head"><small>Tisch 7</small><h4>Demo-Restaurant</h4></div>
-
-        <!-- Ansicht 1: Speisekarte -->
-        <div class="view active" id="v-menu"></div>
-        <button class="cart-bar" id="cartBar" disabled><span><span class="badge" id="cartCount">0</span>Warenkorb</span><span id="cartSum">0,00 €</span></button>
-
-        <!-- Ansicht 2: Warenkorb -->
-        <div class="view" id="v-cart">
-          <button class="back" id="backBtn">← Zurück zur Karte</button>
-          <div id="cartLines" style="display:grid;gap:8px"></div>
-          <div class="total"><span>Gesamt</span><span id="cartTotal">0,00 €</span></div>
-          <button class="pay-btn" id="payBtn">Jetzt bezahlen</button>
-          <p class="note" style="text-align:center">Demo – keine echte Zahlung</p>
-        </div>
-
-        <!-- Ansicht 3: Bezahlt + Bewertung -->
-        <div class="view center" id="v-done">
-          <div class="check">✓</div>
-          <h4 style="font-family:var(--serif);font-size:1.4rem">Danke, bezahlt!</h4>
-          <p style="font-size:.88rem;color:#666">Deine Bestellung ist in der Küche.</p>
-          <div class="stars" id="stars"></div>
-          <a class="g-btn" href="#demo" id="gBtn"><b>G</b> Bewerte uns auf Google</a>
-          <p class="note" id="gNote">Demo – kein echter Link</p>
-          <button class="back" id="resetBtn" style="text-align:center">Demo neu starten</button>
-        </div>
-      </div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 4. FEATURES ============ -->
-<section id="features">
-  <div class="wrap">
-    <h2 class="section-title">Alles, was dein Laden braucht</h2>
-    <p class="section-sub">Ein Tag, eine Website, ein Ablauf.</p>
-    <div class="features">
-      <article class="feature lead f1"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M12 3v3M8 11V8M16 11V8"/></svg><h3>Bestellen am Tisch</h3><p>Gäste bestellen, wann sie wollen – ohne zu winken oder zu warten. Die Bestellung geht direkt in die Küche.</p></article>
-      <article class="feature f2"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M11 18.5h2"/></svg><h3>Bezahlen per Handy</h3><p>Kontaktlos am Tisch zahlen. Kein Kartengerät nötig.</p></article>
-      <article class="feature f3"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.8-4.4 4.2 1.1 6-5.5-3-5.5 3 1.1-6L3.2 9.4l6.1-.8z"/></svg><h3>Google-Bewertungen</h3><p>Nach der Zahlung folgt der Link zur Bewertung.</p></article>
-      <article class="feature f4"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg><h3>Eigene Website pro Restaurant</h3><p>Karte, Logo und Farben – im Abo inklusive.</p></article>
-      <article class="feature f5"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg><h3>Keine App nötig</h3><p>Jedes moderne Smartphone liest NFC. Tippen genügt.</p></article>
-      <article class="feature f6"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><div><h3>Einfache Einrichtung</h3><p>Tag hinstellen, Karte hinterlegen, loslegen. In wenigen Minuten live.</p></div></article>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 5. VORTEILE ============ -->
-<section>
-  <div class="wrap">
-    <h2 class="section-title">Mehr Zeit für die Gäste</h2>
-    <p class="section-sub">Weniger Laufwege fürs Team, ein entspannteres Erlebnis für die Gäste.</p>
-    <div class="benefits">
-      <div class="benefit-lead"><div class="big">bis zu 10 %</div><p>effizienter bei vielen Gästen</p></div>
-      <ul class="benefit-list">
-        <li><h3>Weniger Laufwege</h3><p>Weniger Hin und Her zwischen Tisch, Theke und Kasse.</p></li>
-        <li><h3>Schnellere Tischwechsel</h3><p>Zahlen ohne Warten auf die Rechnung – der Tisch ist früher frei.</p></li>
-        <li><h3>Zeit, Geld und Personal sparen</h3><p>Das Team wird entlastet, die Gäste sind zufriedener.</p></li>
-      </ul>
-    </div>
-    <p class="fine">Richtwert aus unserer Konzeptphase, keine Garantie.</p>
-  </div>
-</section>
-
-<!-- ============ 6. PREISE ============ -->
-<section id="preise">
-  <div class="wrap">
-    <h2 class="section-title">Preise</h2>
-    <p class="section-sub">Pro Tisch ein Tag, dazu das Abo für Software und Website.</p>
-    <div class="pricing">
-      <article class="price">
-        <span class="tag">Hardware</span>
-        <h3>NFC-Tag</h3>
-        <div class="amount">15 €<small> einmalig</small></div>
-        <ul><li>Pro Tisch ein Tag</li><li>3D-gedrucktes Gehäuse</li><li>Robust &amp; wartungsfrei</li></ul>
-        <a href="#kontakt" class="btn btn-ghost">Tag anfragen</a>
-      </article>
-      <article class="price pro">
-        <span class="tag">Software</span>
-        <h3>NFConnect Abo</h3>
-        <div class="amount">80 €<small> / Monat</small></div>
-        <ul><li>Eigene Website inklusive</li><li>Bestellen, Bezahlen, Google-Bewertung</li><li>Einrichtung &amp; Support</li></ul>
-        <a href="#kontakt" class="btn btn-primary">Gratis testen</a>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 7. KONTAKT ============ -->
-<section id="kontakt">
-  <div class="wrap">
-    <div class="contact-box reveal">
-      <div>
-        <h2 class="section-title">Gratis-Testpaket anfordern.</h2>
-        <p style="color:var(--muted)">Wir schicken dir einen NFC-Tag und richten deine Demo-Website ein. Unverbindlich.</p>
-      </div>
-      <div>
-        <form id="contactForm">
-          <label>Name<input required name="name" autocomplete="name" placeholder="Max Mustermann"></label>
-          <label>Restaurant / Laden<input required name="shop" autocomplete="organization" placeholder="Café Sonnenschein"></label>
-          <label>E-Mail<input required type="email" name="mail" autocomplete="email" inputmode="email" placeholder="du@beispiel.de"></label>
-          <label>Typ
-            <select name="type"><option>Restaurant</option><option>Café</option><option>Kleiner Laden</option><option>Automat</option></select>
-          </label>
-          <button class="btn btn-primary" type="submit" style="justify-content:center">Testpaket anfordern</button>
-          <p class="note" style="color:var(--muted);font-size:.75rem">Demo-Formular – es werden keine Daten gesendet.</p>
-        </form>
-        <div class="form-ok" id="formOk">
-          <div class="check">✓</div>
-          <h3 style="font-size:1.5rem">Danke!</h3>
-          <p style="color:var(--muted)">(Demo) In der echten Version melden wir uns innerhalb von 24 Stunden.</p>
+<main>
+<!-- ================= 2. SO GEHT’S: drei Gesten, die Bildschirme wachsen ================= -->
+<section class="field f-green so" id="so">
+  <h2 data-reveal>Drei Gesten am Tisch</h2>
+  <ol class="so-steps">
+    <li class="stp">
+      <div class="tile f-night" data-reveal>
+        <div class="ui" data-ui>
+          <div class="row"><span class="nfc"><svg viewBox="0 0 40 40" fill="none" stroke="#2f9e4f" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="20" r="2.8" fill="#2f9e4f" stroke="none"/><path d="M18 11q10 9 0 18"/><path d="M25 5q17 15 0 30"/></svg></span>
+            <span><small>NFC-Tag erkannt</small><b>Demo-Restaurant · Tisch 7</b></span></div>
+          <span class="ui-btn">Öffnen</span>
         </div>
       </div>
+      <h3 data-reveal>Tippen</h3>
+      <p data-reveal>Handy an den Tag halten. Die Seite des Restaurants öffnet sich sofort, ohne App.</p>
+    </li>
+    <li class="stp">
+      <div class="tile f-paper" data-reveal>
+        <div class="ui" data-ui>
+          <small>Tisch 7</small><b style="font:600 1.5em/1.2 var(--serif)">Speisekarte</b>
+          <div class="dish"><img src="bilder/essen-pizza.webp" alt="" width="240" height="240" loading="lazy"><span><b>Margherita</b><small>9,50 €</small></span><span class="plus" aria-hidden="true">+</span></div>
+          <div class="dish"><img src="bilder/essen-pasta.webp" alt="" width="240" height="240" loading="lazy"><span><b>Pasta Pesto</b><small>11,00 €</small></span><span class="plus" aria-hidden="true">+</span></div>
+          <div class="dish"><img src="bilder/essen-limo.webp" alt="" width="240" height="240" loading="lazy"><span><b>Hausgemachte Limo</b><small>4,20 €</small></span><span class="plus" aria-hidden="true">+</span></div>
+        </div>
+      </div>
+      <h3 data-reveal>Bestellen</h3>
+      <p data-reveal>Karte ansehen, Gerichte antippen, abschicken – direkt vom Platz aus.</p>
+    </li>
+    <li class="stp">
+      <div class="tile f-deep" data-reveal>
+        <div class="ui" data-ui>
+          <div class="check"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <p class="big">Danke, bezahlt!</p>
+          <small style="text-align:center">Tisch 7 · 24,70 €</small>
+          <p class="stars" role="img" aria-label="5 von 5 Sternen"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></p>
+          <span class="g"><i>G</i> Bewerte uns auf Google</span>
+        </div>
+      </div>
+      <h3 data-reveal>Bezahlen und bewerten</h3>
+      <p data-reveal>Per Handy zahlen, dann mit einem Tipp bei Google bewerten. Der Tisch ist frei.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ================= 3. AUSPROBIEREN: das Handy an Tisch 7 (das Live-Element) ================= -->
+<section class="field f-paper demo" id="demo">
+  <div class="demo-copy">
+    <h2 data-reveal aria-live="polite">Tisch 7 <span id="demoWord">wartet</span>.</h2>
+    <p data-reveal>Bestell etwas und bezahle – so erlebt es dein Gast. Es ist eine Demo, es wird nichts abgebucht.</p>
+  </div>
+
+  <div class="phone-wrap" data-reveal>
+    <div class="phone" data-ui><div class="screen">
+      <div class="notch"></div>
+      <div class="app-head"><small>Tisch 7</small><h4>Demo-Restaurant</h4></div>
+
+      <!-- Ansicht 1: Speisekarte -->
+      <div class="view active" id="v-menu"></div>
+      <noscript><p class="note" style="padding:0 16px">Die Demo braucht JavaScript.</p></noscript>
+      <button class="cart-bar" id="cartBar" disabled><span><span class="badge" id="cartCount">0</span>Warenkorb</span><span id="cartSum">0,00 €</span></button>
+
+      <!-- Ansicht 2: Warenkorb -->
+      <div class="view" id="v-cart">
+        <button class="back" id="backBtn">← Zurück zur Karte</button>
+        <div id="cartLines" style="display:grid;gap:8px"></div>
+        <div class="total"><span>Gesamt</span><span id="cartTotal">0,00 €</span></div>
+        <button class="pay-btn" id="payBtn">Jetzt bezahlen</button>
+        <p class="note" style="text-align:center">Demo – keine echte Zahlung</p>
+      </div>
+
+      <!-- Ansicht 3: Bezahlt + Bewertung -->
+      <div class="view center" id="v-done">
+        <div class="ok"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h4 style="font:600 var(--l)/1.15 var(--serif)">Danke, bezahlt!</h4>
+        <p style="font-size:var(--s);color:#4f565c">Deine Bestellung ist unterwegs.</p>
+        <div class="stars" id="stars" role="group" aria-label="Bewertung"></div>
+        <a class="g-btn" href="#demo" id="gBtn"><b>G</b> Bewerte uns auf Google</a>
+        <p class="note" id="gNote">Demo – kein echter Link</p>
+        <button class="back" id="resetBtn" style="text-align:center">Demo neu starten</button>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ================= 4. VORTEILE: Foto mit zwei Zahlen ================= -->
+<section class="f-deep stats" id="vorteile">
+  <h2 data-reveal>Weniger laufen, schneller frei</h2>
+  <div class="mosaic" data-reveal-shutter>
+    <figure class="m-photo shutter">
+      <img src="bilder/baristas.jpg" alt="Baristas stellen an einer vollen Theke Espresso und Cappuccino bereit" width="1280" height="852" loading="lazy">
+    </figure>
+    <div class="m-tile f-green">
+      <p class="fig" data-reveal>10 %</p>
+      <p class="cap" data-reveal>bis zu so viel effizienter bei vollem Haus, weil Wege zu Tisch und Kasse wegfallen. Unser Richtwert, keine Garantie.</p>
+    </div>
+    <div class="m-tile f-paper">
+      <p class="fig" data-reveal>1 Tipp</p>
+      <p class="cap" data-reveal>statt Winken und Warten auf die Rechnung. Der Tisch wird schneller frei.</p>
     </div>
   </div>
 </section>
 
-<!-- ============ 8. FOOTER ============ -->
-<footer>
-  <div class="wrap">
-    <div class="logo">NF<span>Connect</span></div>
-    <div>© 2026 NFConnect –Demo-Seite, alle Inhalte beispielhaft.</div>
+<!-- ================= 5. WAS DRIN IST: fünf Exponate ================= -->
+<section class="field f-mint drin" id="drin">
+  <div class="drin-intro">
+    <h2 data-reveal>Was drin ist</h2>
+    <p data-reveal>Ein Aufsteller pro Tisch und eine eigene Website – alles, was der Abend am Tisch braucht.</p>
   </div>
+  <ul class="specimens">
+    <li class="sp">
+      <div class="sp-tile f-night" data-reveal><img src="bilder/render-tags.webp" class="fill" alt="Nahaufnahme der zwei NFC-Tags mit Magneten in der Schräge des Aufstellers" width="1000" height="1250" loading="lazy"></div>
+      <h3>Bestellen am Tisch</h3>
+      <p class="soft">Gäste bestellen vom Platz aus, ohne App. Die meisten Smartphones lesen NFC.</p>
+    </li>
+    <li class="sp wide">
+      <div class="sp-tile f-green" data-reveal>
+        <div class="ui ui-site" data-ui>
+          <div class="bar"><i></i><i></i><i></i><span>demo-restaurant.nfconnect.de</span></div>
+          <div class="body">
+            <small>Willkommen an Tisch 7</small><b class="title">Demo-Restaurant</b>
+            <div class="dish"><img src="bilder/essen-salat.webp" alt="" width="240" height="240" loading="lazy"><span><b>Caesar Salad</b><small>10,50 €</small></span><span class="plus" aria-hidden="true">+</span></div>
+            <div class="dish"><img src="bilder/essen-tiramisu.webp" alt="" width="240" height="240" loading="lazy"><span><b>Tiramisu</b><small>5,90 €</small></span><span class="plus" aria-hidden="true">+</span></div>
+          </div>
+        </div>
+      </div>
+      <h3>Eigene Website</h3>
+      <p class="soft">Karte, Logo und Farben deines Ladens – im Abo inklusive.</p>
+    </li>
+    <li class="sp">
+      <div class="sp-tile f-deep" data-reveal>
+        <div class="ui" data-ui style="width:16em">
+          <small>Tisch 7 · Gesamt</small><p class="big" style="text-align:left">24,70 €</p>
+          <span class="ui-btn">Jetzt bezahlen</span>
+        </div>
+      </div>
+      <h3>Bezahlen per Handy</h3>
+      <p class="soft">Direkt am Tisch, ohne auf die Rechnung zu warten.</p>
+    </li>
+    <li class="sp">
+      <div class="sp-tile f-night" data-reveal>
+        <div class="ui" data-ui style="width:16em;text-align:center">
+          <b>Wie war’s?</b><p class="stars" role="img" aria-label="5 von 5 Sternen"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></p><span class="g"><i>G</i> Auf Google bewerten</span>
+        </div>
+      </div>
+      <h3>Google-Bewertungen</h3>
+      <p class="soft">Nach dem Zahlen folgt der Link zur Bewertung.</p>
+    </li>
+    <li class="sp">
+      <div class="sp-tile f-green" data-reveal><img src="bilder/render-seite.webp" alt="Seitenansicht des Aufstellers: Schräge mit Tags, dahinter die leicht geneigte Rückwand" width="1000" height="1250" loading="lazy"></div>
+      <h3>Schnell eingerichtet</h3>
+      <p class="soft">Aufsteller hinstellen, Karte hinterlegen, fertig.</p>
+    </li>
+  </ul>
+</section>
+
+<!-- ================= 6. FÜR WEN: eine Zeile pro Ort, Vorschau beim Zeigen ================= -->
+<section class="field f-night wen" id="fuer-wen">
+  <h2 data-reveal>Für wen</h2>
+  <div class="index">
+    <ul class="index__list">
+      <li><a class="index__row" href="#kontakt" data-type="Restaurant" data-preview="bilder/restaurant-abend.jpg">
+        <span class="index__name">Restaurants</span><span class="index__fact">Bestellen und zahlen am Tisch</span>
+        <img class="index__thumb" src="bilder/restaurant-abend.jpg" alt="" width="1024" height="683" loading="lazy"></a></li>
+      <li><a class="index__row" href="#kontakt" data-type="Café" data-preview="bilder/cafe-theke.jpg">
+        <span class="index__name">Cafés</span><span class="index__fact">Bestellen ohne Schlange an der Theke</span>
+        <img class="index__thumb" src="bilder/cafe-theke.jpg" alt="" width="1024" height="686" loading="lazy"></a></li>
+      <li><a class="index__row" href="#kontakt" data-type="Kleiner Laden" data-preview="bilder/laden.jpg">
+        <span class="index__name">Läden</span><span class="index__fact">Eigene Website und Google-Bewertungen</span>
+        <img class="index__thumb" src="bilder/laden.jpg" alt="" width="1023" height="635" loading="lazy"></a></li>
+      <li><a class="index__row" href="#kontakt" data-type="Automat" data-preview="bilder/automat.jpg">
+        <span class="index__name">Automaten</span><span class="index__fact">Infos und Bewertung direkt am Gerät</span>
+        <img class="index__thumb" src="bilder/automat.jpg" alt="" width="1015" height="1456" loading="lazy"></a></li>
+    </ul>
+    <div class="index__frame" aria-hidden="true"><img alt=""></div>
+  </div>
+</section>
+
+<!-- ================= 7. PREISE: das Ticket ================= -->
+<section class="field f-green preise" id="preise">
+  <div class="ticket" data-reveal>
+    <div class="t-main">
+      <h2>Ein Tag pro Tisch</h2>
+      <div class="calc">
+        <span id="calcLbl">Deine Tische</span>
+        <button type="button" id="minus" aria-label="Ein Tisch weniger">−</button>
+        <output id="tables" aria-labelledby="calcLbl" aria-live="polite">10</output>
+        <button type="button" id="plus" aria-label="Ein Tisch mehr">+</button>
+      </div>
+      <ul class="t-lines">
+        <li>15 € pro NFC-Tag, einmalig</li>
+        <li>80 € im Monat für die Software</li>
+        <li>Eigene Website inklusive</li>
+        <li>Erst gratis testen, dann entscheiden</li>
+      </ul>
+    </div>
+    <span class="perf" aria-hidden="true"></span>
+    <div class="t-stub">
+      <p class="t-price">80 €</p>
+      <p class="t-per">im Monat</p>
+      <p class="t-once" id="once">+ 150 € einmalig für 10 Tags</p>
+      <a class="btn btn-green" href="#kontakt">Gratis testen</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 8. KONTAKT: Karte auf einem Espresso, der gerade serviert wurde ================= -->
+<section class="kontakt" id="kontakt">
+  <video class="k-photo" id="kVideo" autoplay muted loop playsinline preload="metadata" poster="bilder/espresso-poster.jpg" width="854" height="480" aria-hidden="true">
+    <source src="bilder/espresso.webm" type="video/webm"><source src="bilder/espresso.mp4" type="video/mp4">
+  </video>
+  <div class="k-card f-paper" data-reveal>
+    <h2>Jetzt gratis testen</h2>
+    <p>Wir schicken dir ein Testpaket: einen Aufsteller und deine Demo-Website. Unverbindlich.</p>
+    <form class="k-form" id="contactForm">
+      <label>Name<input required name="name" autocomplete="name"></label>
+      <label>Restaurant oder Laden<input required name="shop" autocomplete="organization"></label>
+      <label>E-Mail<input required type="email" name="mail" autocomplete="email" inputmode="email"></label>
+      <label>Art<select name="type" id="typeSel"><option>Restaurant</option><option>Café</option><option>Kleiner Laden</option><option>Automat</option></select></label>
+      <button class="btn btn-dark" type="submit">Testpaket anfordern</button>
+      <p class="k-note soft">Demo-Formular: Es werden keine Daten gesendet.</p>
+    </form>
+    <div class="form-ok" id="formOk" hidden>
+      <h3>Danke!</h3>
+      <p>In der echten Version melden wir uns innerhalb von 24 Stunden. Hier ist es nur eine Demo.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ================= 9. FUSS: das Zeichen, aus Blöcken gebaut ================= -->
+<footer class="foot f-paper">
+  <div class="mark" role="img" aria-label="NFConnect">
+    <span class="blk" style="--hgt:100%">N</span><span class="blk" style="--hgt:78%">F</span><span class="blk" style="--hgt:92%">C</span><span class="blk" style="--hgt:64%">o</span><span class="blk" style="--hgt:72%">n</span><span class="blk" style="--hgt:60%">n</span><span class="blk" style="--hgt:84%">e</span><span class="blk" style="--hgt:70%">c</span><span class="blk" style="--hgt:96%">t</span>
+  </div>
+  <div class="foot-grid">
+    <nav class="foot-nav" aria-label="Kapitel im Fuß">
+      <a href="#so">So geht’s</a><a href="#demo">Ausprobieren</a><a href="#vorteile">Vorteile</a><a href="#drin">Was drin ist</a>
+      <a href="#fuer-wen">Für wen</a><a href="#preise">Preise</a><a href="#kontakt">Gratis testen</a><a href="#top">Nach oben</a>
+    </nav>
+    <p class="foot-about">NFConnect – der NFC-Aufsteller für Restaurants, Cafés, kleine Läden und Automaten. Selbst entwickelt und im 3D-Drucker gebaut.</p>
+  </div>
+  <details class="credits"><summary>Bildnachweise</summary><p>Fotos und Video aus offenen Archiven: <a href="https://www.flickr.com/photos/10559879@N00/4105638342">Café-Theke</a> (avlxyz, CC BY-SA 2.0) · <a href="https://www.flickr.com/photos/34128007@N04/10475776156">Restaurant am Abend</a> (Prayitno / Thank you for (12 millions +) view, CC BY 2.0) · <a href="https://www.flickr.com/photos/22799676@N03/8246566956">Laden</a> (Peter Alfred Hess, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=5056847">Automat</a> (MApoCE, CC BY-SA 3.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=188972155">Baristas</a> (Shixart1985, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=41882039">Pizza</a> (Lombroso, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=80211858">Salat</a> (Geoff Peters from Vancouver, BC, Canada, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=180636827">Pasta</a> (Ralff Nestor Nacor, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=11769909">Tiramisu</a> (Raffaele Diomede from Pordenone, ITALIA, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=144679912">Limonade</a> (Twilightin, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/wiki/File:Der_perfekte_Espresso_aus_dem_Siebtr%C3%A4ger.ogv">Espresso-Video</a> (Max Duchardt, Katrin Engel, CC BY 3.0). Der Aufsteller ist ein Rendering unseres 3D-Modells.</p></details>
+  <div class="foot-last"><span>© 2026 NFConnect · Demo-Seite, Inhalte beispielhaft</span><a class="btn btn-dark btn-sm" href="#top">Nach oben</a></div>
 </footer>
 
 <script>
@@ -433,30 +701,28 @@ function cssModel(){
       const [fw,fh,t]=sides[k], f=document.createElement('div'); f.className='face';
       const sh=SHADE[k], ov = sh>=0 ? `rgba(0,0,0,${sh})` : `rgba(255,255,255,${-sh})`;
       f.style.cssText=`width:${fw}px;height:${fh}px;left:${-fw/2}px;top:${-fh/2}px;transform:${t};`+
-        `background:linear-gradient(${ov},${ov}),${color};border-radius:${radius}px`;
+        `background:${color};box-shadow:inset 0 0 0 999px ${ov};border-radius:${radius}px`; // taste-skill-ignore: Schattierung der Würfelflächen im Rückfall-Modell
       if(content[k]) f.innerHTML=content[k];
       el.appendChild(f);
     }
     world.appendChild(el);
   }
 
-  const BODY='#2b3645', CORAL='#34c46a', CREAM='#f3efe7', GLASS='linear-gradient(145deg,#1a232e,#0c1118)';
+  const BODY='#e9e6e0', FRAME='#2f9e4f', CREAM='#f7f5f0', GLASS='#fbfaf7';
   /* Gehäuse: Sockel + senkrechte Rückwand (Form wie der Prototyp, eigene Farben) */
   box({w:260,h:30,d:170,x:0,y:105,z:0,color:BODY});
   box({w:260,h:260,d:26,x:0,y:-40,z:-66,color:BODY});
   /* Rahmen um das Display (4 Leisten) */
-  box({w:196,h:12,d:8,x:0,y:-154,z:-49,color:CORAL});
-  box({w:196,h:12,d:8,x:0,y:-16,z:-49,color:CORAL});
-  box({w:12,h:126,d:8,x:-92,y:-85,z:-49,color:CORAL});
-  box({w:12,h:126,d:8,x:92,y:-85,z:-49,color:CORAL});
+  box({w:196,h:12,d:8,x:0,y:-154,z:-49,color:FRAME});
+  box({w:196,h:12,d:8,x:0,y:-16,z:-49,color:FRAME});
+  box({w:12,h:126,d:8,x:-92,y:-85,z:-49,color:FRAME});
+  box({w:12,h:126,d:8,x:92,y:-85,z:-49,color:FRAME});
   /* Display-Glas mit Schriftzug */
   box({w:172,h:126,d:2,x:0,y:-85,z:-52,color:GLASS,
-       content:{front:'<div class="glass-label">NF<span>Connect</span><small>Tap · Order · Pay</small></div>'}});
+       content:{front:'<div class="glass-label">NF<span>Connect</span></div>'}});
   /* ZWEI NFC-Pads auf dem Sockel – beide mit NFC-Symbol */
   box({w:84,h:8,d:84,x:-66,y:86,z:22,color:CREAM,radius:10,content:{top:NFC}});
   box({w:84,h:8,d:84,x:66, y:86,z:22,color:CREAM,radius:10,content:{top:NFC}});
-  /* Drittes NFC-Pad auf der Rückseite der Rückwand (für die andere Seite des Tischs) */
-  box({w:84,h:84,d:8,x:0,y:-40,z:-83,color:CREAM,radius:10,content:{back:NFC}});
   const floor=document.createElement('div'); floor.className='floor'; world.appendChild(floor);
 
   /* Drehen: Auto-Rotation + Ziehen mit Maus/Finger */
@@ -600,7 +866,7 @@ void main(){
     float tg=(-1.65-ro.y)/rd.y;
     if(tg>0.){ vec3 pg=ro+rd*tg; float d=map(pg).x;
       float s=softShadow(pg+vec3(0.,.02,0.),normalize(vec3(-.5,.8,.6)));
-      a=(.55*exp(-max(d,0.)*1.5)+.35*(1.-s))*(1.-smoothstep(3.5,6.5,length(pg.xz))); a=clamp(a,0.,.85); }
+      a=(.55*exp(-max(d,0.)*1.5)+.35*(1.-s))*(1.-smoothstep(1.3,2.7,length(pg.xz))); a=clamp(a,0.,.85); }
   }
   col=clamp((col*(2.51*col+.03))/(col*(2.43*col+.59)+.14),0.,1.);   /* Tonemapping (filmisch) */
   col=pow(col,vec3(1./2.2));
@@ -684,29 +950,81 @@ void main(){
   window.__model={set:(yDeg,xDeg)=>{ry=yDeg*Math.PI/180; el=-xDeg*Math.PI/180;}};
   return true;
 }
+
 if(!initGL()) cssModel();   /* ohne WebGL: Rückfall auf das einfache CSS-3D-Modell */
 
-/* ============ JS 1: Scroll-Animationen ============ */
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-}, { threshold: .12 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-/* ============ JS 2: Handy-Demo ============ */
-const DISHES = [
-  { id:1, name:'Margherita Pizza', desc:'Tomate, Mozzarella, Basilikum', price:9.50, emoji:'🍕' },
-  { id:2, name:'Burger Classic',   desc:'Rind, Cheddar, Pommes',        price:12.90, emoji:'🍔' },
-  { id:3, name:'Caesar Salad',     desc:'Hähnchen, Parmesan, Croûtons', price:10.50, emoji:'🥗' },
-  { id:4, name:'Pasta Pesto',      desc:'Hausgemachtes Basilikumpesto', price:11.00, emoji:'🍝' },
-  { id:5, name:'Tiramisu',         desc:'Nach Omas Rezept',             price:5.90,  emoji:'🍰' },
-  { id:6, name:'Hausgemachte Limo',desc:'Zitrone-Minze, 0,4 l',         price:4.20,  emoji:'🍋' },
-];
-let cart = {};                       // { dishId: Anzahl }
 const $ = id => document.getElementById(id);
+
+/* ============ Auftritte: jedes Kapitel zeigt seine Teile gestaffelt ============ */
+document.querySelectorAll('section, footer').forEach(sec => {
+  sec.querySelectorAll('[data-reveal]').forEach((el, i) => el.style.setProperty('--d', (i % 6) * 80 + 'ms'));
+});
+const io = new IntersectionObserver(entries => {
+  for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+}, { rootMargin: '0px 0px -10% 0px', threshold: .08 });
+document.querySelectorAll('[data-reveal], [data-reveal-shutter]').forEach(el => io.observe(el));
+
+/* ============ Für wen: Vorschau-Rahmen auf Höhe der Zeile ============ */
+(() => {
+  const root = document.querySelector('.index'); if (!root) return;
+  const frame = root.querySelector('.index__frame'), pic = frame.querySelector('img');
+  const fine = matchMedia('(min-width: 901px)');
+  let warmed = false;
+  const show = row => {
+    if (!fine.matches) return;
+    if (!warmed) { warmed = true; root.querySelectorAll('[data-preview]').forEach(a => { new Image().src = a.dataset.preview; }); }
+    pic.src = row.dataset.preview;
+    const y = row.offsetTop + row.offsetHeight / 2 - frame.offsetHeight / 2;
+    const max = root.offsetHeight - frame.offsetHeight;
+    const opening = !frame.classList.contains('is-open');
+    if (opening) frame.style.transitionProperty = 'clip-path';
+    frame.style.transform = `translateY(${Math.min(max, Math.max(0, y))}px)`;
+    if (opening) { frame.getBoundingClientRect(); frame.style.transitionProperty = ''; }
+    frame.classList.add('is-open');
+  };
+  const rows = [...root.querySelectorAll('.index__row')];
+  rows.forEach(row => {
+    row.addEventListener('pointerenter', () => show(row));
+    row.addEventListener('focus', () => show(row));
+    row.addEventListener('click', () => { const s = $('typeSel'); if (s) s.value = row.dataset.type; });  /* Art im Formular vorwählen */
+  });
+  root.addEventListener('pointerleave', () => show(rows[0]));   /* Ruhestellung: das erste Bild */
+  root.addEventListener('focusout', e => { if (!root.contains(e.relatedTarget)) show(rows[0]); });
+  show(rows[0]); fine.addEventListener('change', () => show(rows[0]));
+})();
+
+/* ============ Preise: Tischrechner auf dem Ticket ============ */
+(() => {
+  let n = 10;
+  const out = $('tables'), once = $('once');
+  const draw = () => {
+    out.textContent = n;
+    once.classList.add('tick');
+    setTimeout(() => {
+      once.textContent = `+ ${n * 15} € einmalig für ${n} ${n === 1 ? 'Tag' : 'Tags'}`;
+      once.classList.remove('tick');
+    }, 120);
+    $('minus').disabled = n <= 1; $('plus').disabled = n >= 60;
+  };
+  $('minus').addEventListener('click', () => { if (n > 1) { n--; draw(); } });
+  $('plus').addEventListener('click', () => { if (n < 60) { n++; draw(); } });
+})();
+
+/* ============ Ausprobieren: Handy-Demo an Tisch 7 ============ */
+const DISHES = [
+  { id:1, name:'Margherita',        desc:'Tomate, Mozzarella, Basilikum', price:9.50,  img:'bilder/essen-pizza.webp' },
+  { id:2, name:'Caesar Salad',      desc:'Hähnchen, Parmesan, Croûtons', price:10.50, img:'bilder/essen-salat.webp' },
+  { id:3, name:'Pasta Pesto',       desc:'Hausgemachtes Basilikumpesto', price:11.00, img:'bilder/essen-pasta.webp' },
+  { id:4, name:'Tiramisu',          desc:'Nach Omas Rezept',             price:5.90,  img:'bilder/essen-tiramisu.webp' },
+  { id:5, name:'Hausgemachte Limo', desc:'Zitrone und Minze, 0,4 l',     price:4.20,  img:'bilder/essen-limo.webp' },
+];
+let cart = {};                                   // { Gericht-ID: Anzahl }
 const eur = n => n.toFixed(2).replace('.', ',') + ' €';
 const views = ['v-menu','v-cart','v-done'];
+const demo = $('demo');
+const setWord = w => { $('demoWord').textContent = w; };   /* die Überschrift erzählt mit */
 
-function show(id){                   // Ansicht wechseln
+function show(id){
   views.forEach(v => $(v).classList.toggle('active', v === id));
   $('cartBar').style.display = id === 'v-menu' ? 'flex' : 'none';
 }
@@ -718,9 +1036,9 @@ function totals(){
 function renderMenu(){
   $('v-menu').innerHTML = DISHES.map(d => `
     <div class="dish">
-      <div class="emoji">${d.emoji}</div>
-      <div class="info"><b>${d.name}</b><span>${d.desc}</span><br><b style="color:#34c46a;font-size:.85rem">${eur(d.price)}</b></div>
-      <button class="add" data-id="${d.id}" aria-label="${d.name} hinzufügen">+</button>
+      <img src="${d.img}" alt="" width="240" height="240" loading="lazy">
+      <div class="info"><b>${d.name}</b><span>${d.desc}</span><br><b class="pr">${eur(d.price)}</b></div>
+      <button class="add" data-id="${d.id}" aria-label="${d.name} in den Warenkorb">+</button>
     </div>`).join('');
 }
 function updateBar(){
@@ -728,20 +1046,22 @@ function updateBar(){
   $('cartCount').textContent = t.count;
   $('cartSum').textContent = eur(t.sum);
   $('cartBar').disabled = t.count === 0;
+  if (!demo.classList.contains('is-paid')) setWord(t.count ? 'bestellt' : 'wartet');
 }
 function renderCart(){
   const rows = DISHES.filter(d => cart[d.id]).map(d => `
-    <div class="line"><span>${d.emoji} ${d.name}</span>
-      <span class="qty"><button data-m="${d.id}">−</button>${cart[d.id]}<button data-p="${d.id}">+</button></span></div>`);
+    <div class="line"><span>${d.name}</span>
+      <span class="qty"><button data-m="${d.id}" aria-label="${d.name} entfernen">−</button>${cart[d.id]}<button data-p="${d.id}" aria-label="Noch eine ${d.name}">+</button></span></div>`);
   $('cartLines').innerHTML = rows.join('') || '<p class="note">Dein Warenkorb ist leer.</p>';
   $('cartTotal').textContent = eur(totals().sum);
   $('payBtn').disabled = totals().count === 0;
 }
 
 $('v-menu').addEventListener('click', e => {
-  const id = e.target.dataset.id; if (!id) return;
+  const btn = e.target.closest('.add'); if (!btn) return;
+  const id = btn.dataset.id;
   cart[id] = (cart[id] || 0) + 1; updateBar();
-  e.target.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}], 200);
+  btn.animate([{transform:'scale(1.3)'},{transform:'scale(1)'}], {duration:220, easing:'cubic-bezier(.22,1,.36,1)'});
 });
 $('cartBar').addEventListener('click', () => { renderCart(); show('v-cart'); });
 $('backBtn').addEventListener('click', () => show('v-menu'));
@@ -751,31 +1071,37 @@ $('cartLines').addEventListener('click', e => {
   if (p) cart[p]++;
   renderCart(); updateBar();
 });
-$('payBtn').addEventListener('click', () => {         // SIMULIERTE Zahlung
+$('payBtn').addEventListener('click', () => {        /* SIMULIERTE Zahlung, es wird nichts abgebucht */
   $('payBtn').textContent = 'Zahlung läuft …';
-  setTimeout(() => { $('payBtn').textContent = 'Jetzt bezahlen'; show('v-done'); }, 900);
+  setTimeout(() => {
+    $('payBtn').textContent = 'Jetzt bezahlen'; show('v-done');
+    demo.classList.add('is-paid'); setWord('bezahlt');   /* das Kapitel wechselt die Farbe */
+  }, 900);
 });
 
-/* Sterne-Bewertung */
-$('stars').innerHTML = [1,2,3,4,5].map(n => `<button data-s="${n}" aria-label="${n} Sterne">★</button>`).join('');
+/* Sterne */
+$('stars').innerHTML = [1,2,3,4,5].map(n => `<button data-s="${n}" aria-label="${n} von 5 Sternen"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></button>`).join('');
 $('stars').addEventListener('click', e => {
-  const s = +e.target.dataset.s; if (!s) return;
+  const b = e.target.closest('button'); const s = b ? +b.dataset.s : 0; if (!s) return;
   [...$('stars').children].forEach((b,i) => b.classList.toggle('on', i < s));
+  setWord('bewertet');
 });
-$('gBtn').addEventListener('click', e => { e.preventDefault(); $('gNote').textContent = 'In der echten Version öffnet sich hier die Google-Bewertung.'; });
+$('gBtn').addEventListener('click', e => { e.preventDefault(); $('gNote').textContent = 'In der echten Version öffnet sich hier die Google-Bewertung.'; setWord('bewertet'); });
 $('resetBtn').addEventListener('click', () => {
-  cart = {}; updateBar(); renderCart();
+  cart = {}; demo.classList.remove('is-paid'); updateBar(); renderCart();
   [...$('stars').children].forEach(b => b.classList.remove('on'));
   $('gNote').textContent = 'Demo – kein echter Link'; show('v-menu');
 });
-
 renderMenu(); updateBar(); show('v-menu');
 
-/* ============ JS 3: Kontaktformular (nur Frontend) ============ */
+/* ============ Video: bei „weniger Bewegung“ angehalten ============ */
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) { const v = $('kVideo'); v.removeAttribute('autoplay'); v.pause(); }
+
+/* ============ Kontaktformular (nur Frontend, sendet nichts) ============ */
 $('contactForm').addEventListener('submit', e => {
-  e.preventDefault();                 // nichts wird gesendet
-  e.target.style.display = 'none';
-  $('formOk').style.display = 'block';
+  e.preventDefault();
+  e.target.hidden = true;
+  $('formOk').hidden = false;
 });
 </script>
 </body>
