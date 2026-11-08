@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0e141b">
 <script>document.documentElement.className+=" js"</script>
 <title>NFConnect – Tap. Order. Pay.</title>
-<meta name="description" content="NFConnect ist der NFC-Aufsteller für den Restauranttisch: Handy dranhalten, bestellen, bezahlen, bei Google bewerten. 15 € pro Tag, 80 € im Monat, Website inklusive.">
+<meta name="description" content="NFConnect is the NFC table stand for restaurants: tap your phone, order, pay and leave a Google review. €15 per tag, €80 a month, website included.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
@@ -413,26 +413,26 @@ ul,ol{list-style:none}
 <!-- ================= 1. HERO: Ordnerstapel, jeder Ordner ein Kapitel ================= -->
 <header class="hero f-night" id="top">
   <div class="topbar">
-    <a class="wordmark" href="#top" aria-label="NFConnect – zum Seitenanfang">NF<span>Connect</span></a>
-    <a class="btn btn-green btn-sm" href="#kontakt">Gratis testen</a>
+    <a class="wordmark" href="#top" aria-label="NFConnect – back to top">NF<span>Connect</span></a>
+    <a class="btn btn-green btn-sm" href="#contact">Try it free</a>
   </div>
 
   <h1>Tap. Order. Pay.</h1>
-  <p class="hero-sub">Der NFC-Aufsteller für den Restauranttisch. Gäste halten ihr Handy dran, bestellen, zahlen und bewerten dich bei Google – ohne App.</p>
+  <p class="hero-sub">The NFC stand for the restaurant table. Guests tap their phone, order, pay and review you on Google – no app needed.</p>
 
-  <nav class="folders" aria-label="Kapitel">
-    <a class="folder f-forest" href="#preise"   style="--i:0;--x:0%;--r:-1.4deg"><span class="tab">Preise</span><span class="peek">80 € im Monat · 15 € pro Tag</span></a>
-    <a class="folder f-mint"  href="#drin"     style="--i:1;--x:11%;--r:1.1deg"><span class="tab">Was drin ist</span><span class="peek">Bestellen · Bezahlen · Bewerten · Website</span></a>
-    <a class="folder f-deep"  href="#vorteile" style="--i:2;--x:25%;--r:-.7deg"><span class="tab">Vorteile</span><span class="peek">bis zu 10 % effizienter</span></a>
-    <a class="folder f-paper" href="#demo"     style="--i:3;--x:36%;--r:.5deg"><span class="tab">Ausprobieren</span><span class="peek">Live-Demo an Tisch 7</span></a>
+  <nav class="folders" aria-label="Chapters">
+    <a class="folder f-forest" href="#pricing"   style="--i:0;--x:0%;--r:-1.4deg"><span class="tab">Pricing</span><span class="peek">€80 a month · €15 per tag</span></a>
+    <a class="folder f-mint"  href="#inside"     style="--i:1;--x:11%;--r:1.1deg"><span class="tab">What’s inside</span><span class="peek">Order · Pay · Review · Website</span></a>
+    <a class="folder f-deep"  href="#benefits" style="--i:2;--x:25%;--r:-.7deg"><span class="tab">Benefits</span><span class="peek">up to 10% more efficient</span></a>
+    <a class="folder f-paper" href="#demo"     style="--i:3;--x:36%;--r:.5deg"><span class="tab">Try it</span><span class="peek">Live demo at table 7</span></a>
     <div class="folder f-green front" style="--i:4;--x:0%">
-      <a class="tab" href="#so">So geht’s</a>
+      <a class="tab" href="#how">How it works</a>
       <div class="front-in">
-        <a class="btn btn-dark" href="#kontakt">Gratis-Testpaket anfordern</a>
-        <p class="front-price">15 € pro Tag · 80 € im Monat · Website inklusive</p>
+        <a class="btn btn-dark" href="#contact">Get a free test kit</a>
+        <p class="front-price">€15 per tag · €80 a month · website included</p>
       </div>
       <!-- Der Aufsteller als echtes 3D-Modell (WebGL), er steht auf dem vorderen Ordner -->
-      <div class="stage" id="stage" role="img" aria-label="Drehbares 3D-Modell des NFConnect-Aufstellers: weißes Gehäuse, grüner Rahmen, zwei NFC-Tags auf einer 45-Grad-Schräge">
+      <div class="stage" id="stage" role="img" aria-label="Rotatable 3D model of the NFConnect stand: white body, green frame, two NFC tags on a 45-degree slope">
         <div class="world" id="world"></div>
       </div>
     </div>
@@ -441,44 +441,44 @@ ul,ol{list-style:none}
 
 <main>
 <!-- ================= 2. SO GEHT’S: drei Gesten, die Bildschirme wachsen ================= -->
-<section class="field f-green so" id="so">
-  <h2 data-reveal>Drei Gesten am Tisch</h2>
+<section class="field f-green so" id="how">
+  <h2 data-reveal>Three taps at the table</h2>
   <ol class="so-steps">
     <li class="stp">
       <div class="tile f-night" data-reveal>
         <div class="ui" data-ui>
           <div class="row"><span class="nfc"><svg viewBox="0 0 40 40" fill="none" stroke="#2f9e4f" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="20" r="2.8" fill="#2f9e4f" stroke="none"/><path d="M18 11q10 9 0 18"/><path d="M25 5q17 15 0 30"/></svg></span>
-            <span><small>NFC-Tag erkannt</small><b>Demo-Restaurant · Tisch 7</b></span></div>
-          <span class="ui-btn">Öffnen</span>
+            <span><small>NFC tag detected</small><b>Demo Restaurant · Table 7</b></span></div>
+          <span class="ui-btn">Open</span>
         </div>
       </div>
-      <h3 data-reveal>Tippen</h3>
-      <p data-reveal>Handy an den Tag halten. Die Seite des Restaurants öffnet sich sofort, ohne App.</p>
+      <h3 data-reveal>Tap</h3>
+      <p data-reveal>Hold your phone to the tag. The restaurant’s page opens instantly, no app needed.</p>
     </li>
     <li class="stp">
       <div class="tile f-paper" data-reveal>
         <div class="ui" data-ui>
-          <small>Tisch 7</small><b style="font:600 1.5em/1.2 var(--serif)">Speisekarte</b>
-          <div class="dish"><img src="bilder/essen-pizza.webp" alt="" width="240" height="240" loading="lazy"><span><b>Margherita</b><small>9,50 €</small></span><span class="plus" aria-hidden="true">+</span></div>
-          <div class="dish"><img src="bilder/essen-pasta.webp" alt="" width="240" height="240" loading="lazy"><span><b>Pasta Pesto</b><small>11,00 €</small></span><span class="plus" aria-hidden="true">+</span></div>
-          <div class="dish"><img src="bilder/essen-limo.webp" alt="" width="240" height="240" loading="lazy"><span><b>Hausgemachte Limo</b><small>4,20 €</small></span><span class="plus" aria-hidden="true">+</span></div>
+          <small>Table 7</small><b style="font:600 1.5em/1.2 var(--serif)">Menu</b>
+          <div class="dish"><img src="bilder/essen-pizza.webp" alt="" width="240" height="240" loading="lazy"><span><b>Margherita</b><small>€9.50</small></span><span class="plus" aria-hidden="true">+</span></div>
+          <div class="dish"><img src="bilder/essen-pasta.webp" alt="" width="240" height="240" loading="lazy"><span><b>Pasta Pesto</b><small>€11.00</small></span><span class="plus" aria-hidden="true">+</span></div>
+          <div class="dish"><img src="bilder/essen-limo.webp" alt="" width="240" height="240" loading="lazy"><span><b>Homemade lemonade</b><small>€4.20</small></span><span class="plus" aria-hidden="true">+</span></div>
         </div>
       </div>
-      <h3 data-reveal>Bestellen</h3>
-      <p data-reveal>Karte ansehen, Gerichte antippen, abschicken – direkt vom Platz aus.</p>
+      <h3 data-reveal>Order</h3>
+      <p data-reveal>Browse the menu, tap your dishes, send – right from your seat.</p>
     </li>
     <li class="stp">
       <div class="tile f-deep" data-reveal>
         <div class="ui" data-ui>
           <div class="check"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <p class="big">Danke, bezahlt!</p>
-          <small style="text-align:center">Tisch 7 · 24,70 €</small>
-          <p class="stars" role="img" aria-label="5 von 5 Sternen"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></p>
-          <span class="g"><i>G</i> Bewerte uns auf Google</span>
+          <p class="big">Thanks, paid!</p>
+          <small style="text-align:center">Table 7 · €24.70</small>
+          <p class="stars" role="img" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></p>
+          <span class="g"><i>G</i> Review us on Google</span>
         </div>
       </div>
-      <h3 data-reveal>Bezahlen und bewerten</h3>
-      <p data-reveal>Per Handy zahlen, dann mit einem Tipp bei Google bewerten. Der Tisch ist frei.</p>
+      <h3 data-reveal>Pay and review</h3>
+      <p data-reveal>Pay by phone, then leave a Google review with one tap. The table is free again.</p>
     </li>
   </ol>
 </section>
@@ -486,130 +486,130 @@ ul,ol{list-style:none}
 <!-- ================= 3. AUSPROBIEREN: das Handy an Tisch 7 (das Live-Element) ================= -->
 <section class="field f-paper demo" id="demo">
   <div class="demo-copy">
-    <h2 data-reveal aria-live="polite">Tisch 7 <span id="demoWord">wartet</span>.</h2>
-    <p data-reveal>Bestell etwas und bezahle – so erlebt es dein Gast. Es ist eine Demo, es wird nichts abgebucht.</p>
+    <h2 data-reveal aria-live="polite">Table 7: <span id="demoWord">waiting</span>.</h2>
+    <p data-reveal>Order something and pay – this is what your guest sees. It’s a demo, nothing is charged.</p>
   </div>
 
   <div class="phone-wrap" data-reveal>
     <div class="phone" data-ui><div class="screen">
       <div class="notch"></div>
-      <div class="app-head"><small>Tisch 7</small><h4>Demo-Restaurant</h4></div>
+      <div class="app-head"><small>Table 7</small><h4>Demo Restaurant</h4></div>
 
       <!-- Ansicht 1: Speisekarte -->
       <div class="view active" id="v-menu"></div>
-      <noscript><p class="note" style="padding:0 16px">Die Demo braucht JavaScript.</p></noscript>
-      <button class="cart-bar" id="cartBar" disabled><span><span class="badge" id="cartCount">0</span>Warenkorb</span><span id="cartSum">0,00 €</span></button>
+      <noscript><p class="note" style="padding:0 16px">The demo needs JavaScript.</p></noscript>
+      <button class="cart-bar" id="cartBar" disabled><span><span class="badge" id="cartCount">0</span>Cart</span><span id="cartSum">€0.00</span></button>
 
       <!-- Ansicht 2: Warenkorb -->
       <div class="view" id="v-cart">
-        <button class="back" id="backBtn">← Zurück zur Karte</button>
+        <button class="back" id="backBtn">← Back to the menu</button>
         <div id="cartLines" style="display:grid;gap:8px"></div>
-        <div class="total"><span>Gesamt</span><span id="cartTotal">0,00 €</span></div>
-        <button class="pay-btn" id="payBtn">Jetzt bezahlen</button>
-        <p class="note" style="text-align:center">Demo – keine echte Zahlung</p>
+        <div class="total"><span>Total</span><span id="cartTotal">€0.00</span></div>
+        <button class="pay-btn" id="payBtn">Pay now</button>
+        <p class="note" style="text-align:center">Demo – no real payment</p>
       </div>
 
       <!-- Ansicht 3: Bezahlt + Bewertung -->
       <div class="view center" id="v-done">
         <div class="ok"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h4 style="font:600 var(--l)/1.15 var(--serif)">Danke, bezahlt!</h4>
-        <p style="font-size:var(--s);color:#4f565c">Deine Bestellung ist unterwegs.</p>
-        <div class="stars" id="stars" role="group" aria-label="Bewertung"></div>
-        <a class="g-btn" href="#demo" id="gBtn"><b>G</b> Bewerte uns auf Google</a>
-        <p class="note" id="gNote">Demo – kein echter Link</p>
-        <button class="back" id="resetBtn" style="text-align:center">Demo neu starten</button>
+        <h4 style="font:600 var(--l)/1.15 var(--serif)">Thanks, paid!</h4>
+        <p style="font-size:var(--s);color:#4f565c">Your order is on its way.</p>
+        <div class="stars" id="stars" role="group" aria-label="Rating"></div>
+        <a class="g-btn" href="#demo" id="gBtn"><b>G</b> Review us on Google</a>
+        <p class="note" id="gNote">Demo – not a real link</p>
+        <button class="back" id="resetBtn" style="text-align:center">Restart demo</button>
       </div>
     </div></div>
   </div>
 </section>
 
 <!-- ================= 4. VORTEILE: Foto mit zwei Zahlen ================= -->
-<section class="f-deep stats" id="vorteile">
-  <h2 data-reveal>Weniger laufen, schneller frei</h2>
+<section class="f-deep stats" id="benefits">
+  <h2 data-reveal>Less walking, tables free sooner</h2>
   <div class="mosaic" data-reveal-shutter>
     <figure class="m-photo shutter">
-      <img src="bilder/baristas.jpg" alt="Baristas stellen an einer vollen Theke Espresso und Cappuccino bereit" width="1280" height="852" loading="lazy">
+      <img src="bilder/baristas.jpg" alt="Baristas serving espresso and cappuccino at a busy counter" width="1280" height="852" loading="lazy">
     </figure>
     <div class="m-tile f-green">
-      <p class="fig" data-reveal>10 %</p>
-      <p class="cap" data-reveal>bis zu so viel effizienter bei vollem Haus, weil Wege zu Tisch und Kasse wegfallen. Unser Richtwert, keine Garantie.</p>
+      <p class="fig" data-reveal>10%</p>
+      <p class="cap" data-reveal>up to this much more efficient on a full night, with fewer trips to tables and till. Our estimate, not a guarantee.</p>
     </div>
     <div class="m-tile f-paper">
-      <p class="fig" data-reveal>1 Tipp</p>
-      <p class="cap" data-reveal>statt Winken und Warten auf die Rechnung. Der Tisch wird schneller frei.</p>
+      <p class="fig" data-reveal>1 tap</p>
+      <p class="cap" data-reveal>instead of waving and waiting for the bill. The table is free sooner.</p>
     </div>
   </div>
 </section>
 
 <!-- ================= 5. WAS DRIN IST: fünf Exponate ================= -->
-<section class="field f-mint drin" id="drin">
+<section class="field f-mint drin" id="inside">
   <div class="drin-intro">
-    <h2 data-reveal>Was drin ist</h2>
-    <p data-reveal>Ein Aufsteller pro Tisch und eine eigene Website – alles, was der Abend am Tisch braucht.</p>
+    <h2 data-reveal>What’s inside</h2>
+    <p data-reveal>One stand per table and a website of your own – everything an evening at the table needs.</p>
   </div>
   <ul class="specimens">
     <li class="sp">
-      <div class="sp-tile f-night" data-reveal><img src="bilder/render-tags.webp" class="fill" alt="Nahaufnahme der zwei NFC-Tags mit Magneten in der Schräge des Aufstellers" width="1000" height="1250" loading="lazy"></div>
-      <h3>Bestellen am Tisch</h3>
-      <p class="soft">Gäste bestellen vom Platz aus, ohne App. Die meisten Smartphones lesen NFC.</p>
+      <div class="sp-tile f-night" data-reveal><img src="bilder/render-tags.webp" class="fill" alt="Close-up of the two NFC tags with magnets on the slope of the stand" width="1000" height="1250" loading="lazy"></div>
+      <h3>Order at the table</h3>
+      <p class="soft">Guests order from their seat, no app. Most smartphones read NFC.</p>
     </li>
     <li class="sp wide">
       <div class="sp-tile f-green" data-reveal>
         <div class="ui ui-site" data-ui>
           <div class="bar"><i></i><i></i><i></i><span>demo-restaurant.nfconnect.de</span></div>
           <div class="body">
-            <small>Willkommen an Tisch 7</small><b class="title">Demo-Restaurant</b>
-            <div class="dish"><img src="bilder/essen-salat.webp" alt="" width="240" height="240" loading="lazy"><span><b>Caesar Salad</b><small>10,50 €</small></span><span class="plus" aria-hidden="true">+</span></div>
-            <div class="dish"><img src="bilder/essen-tiramisu.webp" alt="" width="240" height="240" loading="lazy"><span><b>Tiramisu</b><small>5,90 €</small></span><span class="plus" aria-hidden="true">+</span></div>
+            <small>Welcome to table 7</small><b class="title">Demo Restaurant</b>
+            <div class="dish"><img src="bilder/essen-salat.webp" alt="" width="240" height="240" loading="lazy"><span><b>Caesar Salad</b><small>€10.50</small></span><span class="plus" aria-hidden="true">+</span></div>
+            <div class="dish"><img src="bilder/essen-tiramisu.webp" alt="" width="240" height="240" loading="lazy"><span><b>Tiramisu</b><small>€5.90</small></span><span class="plus" aria-hidden="true">+</span></div>
           </div>
         </div>
       </div>
-      <h3>Eigene Website</h3>
-      <p class="soft">Karte, Logo und Farben deines Ladens – im Abo inklusive.</p>
+      <h3>Your own website</h3>
+      <p class="soft">Your menu, logo and colours – included in the subscription.</p>
     </li>
     <li class="sp">
       <div class="sp-tile f-deep" data-reveal>
         <div class="ui" data-ui style="width:16em">
-          <small>Tisch 7 · Gesamt</small><p class="big" style="text-align:left">24,70 €</p>
-          <span class="ui-btn">Jetzt bezahlen</span>
+          <small>Table 7 · Total</small><p class="big" style="text-align:left">€24.70</p>
+          <span class="ui-btn">Pay now</span>
         </div>
       </div>
-      <h3>Bezahlen per Handy</h3>
-      <p class="soft">Direkt am Tisch, ohne auf die Rechnung zu warten.</p>
+      <h3>Pay by phone</h3>
+      <p class="soft">Right at the table, no waiting for the bill.</p>
     </li>
     <li class="sp">
       <div class="sp-tile f-night" data-reveal>
         <div class="ui" data-ui style="width:16em;text-align:center">
-          <b>Wie war’s?</b><p class="stars" role="img" aria-label="5 von 5 Sternen"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></p><span class="g"><i>G</i> Auf Google bewerten</span>
+          <b>How was it?</b><p class="stars" role="img" aria-label="5 von 5 Sternen"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></p><span class="g"><i>G</i> Review on Google</span>
         </div>
       </div>
-      <h3>Google-Bewertungen</h3>
-      <p class="soft">Nach dem Zahlen folgt der Link zur Bewertung.</p>
+      <h3>Google reviews</h3>
+      <p class="soft">After paying, guests get the link to review you.</p>
     </li>
     <li class="sp">
-      <div class="sp-tile f-green" data-reveal><img src="bilder/render-seite.webp" alt="Seitenansicht des Aufstellers: Schräge mit Tags, dahinter die leicht geneigte Rückwand" width="1000" height="1250" loading="lazy"></div>
-      <h3>Schnell eingerichtet</h3>
-      <p class="soft">Aufsteller hinstellen, Karte hinterlegen, fertig.</p>
+      <div class="sp-tile f-green" data-reveal><img src="bilder/render-seite.webp" alt="Side view of the stand: the slope with tags and the slightly tilted back panel" width="1000" height="1250" loading="lazy"></div>
+      <h3>Quick to set up</h3>
+      <p class="soft">Put the stand down, add your menu, done.</p>
     </li>
   </ul>
 </section>
 
 <!-- ================= 6. FÜR WEN: eine Zeile pro Ort, Vorschau beim Zeigen ================= -->
-<section class="field f-night wen" id="fuer-wen">
-  <h2 data-reveal>Für wen</h2>
+<section class="field f-night wen" id="who">
+  <h2 data-reveal>Who it’s for</h2>
   <div class="index">
     <ul class="index__list">
-      <li><a class="index__row" href="#kontakt" data-type="Restaurant" data-preview="bilder/restaurant-abend.jpg">
-        <span class="index__name">Restaurants</span><span class="index__fact">Bestellen und zahlen am Tisch</span>
+      <li><a class="index__row" href="#contact" data-type="Restaurant" data-preview="bilder/restaurant-abend.jpg">
+        <span class="index__name">Restaurants</span><span class="index__fact">Order and pay at the table</span>
         <img class="index__thumb" src="bilder/restaurant-abend.jpg" alt="" width="1024" height="683" loading="lazy"></a></li>
-      <li><a class="index__row" href="#kontakt" data-type="Café" data-preview="bilder/cafe-theke.jpg">
-        <span class="index__name">Cafés</span><span class="index__fact">Bestellen ohne Schlange an der Theke</span>
+      <li><a class="index__row" href="#contact" data-type="Café" data-preview="bilder/cafe-theke.jpg">
+        <span class="index__name">Cafés</span><span class="index__fact">Order without queuing at the counter</span>
         <img class="index__thumb" src="bilder/cafe-theke.jpg" alt="" width="1024" height="686" loading="lazy"></a></li>
-      <li><a class="index__row" href="#kontakt" data-type="Kleiner Laden" data-preview="bilder/laden.jpg">
-        <span class="index__name">Läden</span><span class="index__fact">Eigene Website und Google-Bewertungen</span>
+      <li><a class="index__row" href="#contact" data-type="Small shop" data-preview="bilder/laden.jpg">
+        <span class="index__name">Shops</span><span class="index__fact">Your own website and Google reviews</span>
         <img class="index__thumb" src="bilder/laden.jpg" alt="" width="1023" height="635" loading="lazy"></a></li>
-      <li><a class="index__row" href="#kontakt" data-type="Automat" data-preview="bilder/automat.jpg">
-        <span class="index__name">Automaten</span><span class="index__fact">Infos und Bewertung direkt am Gerät</span>
+      <li><a class="index__row" href="#contact" data-type="Vending machine" data-preview="bilder/automat.jpg">
+        <span class="index__name">Vending</span><span class="index__fact">Info and reviews right at the machine</span>
         <img class="index__thumb" src="bilder/automat.jpg" alt="" width="1015" height="1456" loading="lazy"></a></li>
     </ul>
     <div class="index__frame" aria-hidden="true"><img alt=""></div>
@@ -617,52 +617,52 @@ ul,ol{list-style:none}
 </section>
 
 <!-- ================= 7. PREISE: das Ticket ================= -->
-<section class="field f-forest preise" id="preise">
+<section class="field f-forest preise" id="pricing">
   <div class="ticket" data-reveal>
     <div class="t-main">
-      <h2>Ein Tag pro Tisch</h2>
+      <h2>One tag per table</h2>
       <div class="calc">
-        <span id="calcLbl">Deine Tische</span>
-        <button type="button" id="minus" aria-label="Ein Tisch weniger">−</button>
+        <span id="calcLbl">Your tables</span>
+        <button type="button" id="minus" aria-label="One table fewer">−</button>
         <output id="tables" aria-labelledby="calcLbl" aria-live="polite">10</output>
-        <button type="button" id="plus" aria-label="Ein Tisch mehr">+</button>
+        <button type="button" id="plus" aria-label="One table more">+</button>
       </div>
       <ul class="t-lines">
-        <li>15 € pro NFC-Tag, einmalig</li>
-        <li>80 € im Monat für die Software</li>
-        <li>Eigene Website inklusive</li>
-        <li>Erst gratis testen, dann entscheiden</li>
+        <li>€15 per NFC tag, one-off</li>
+        <li>€80 a month for the software</li>
+        <li>Your own website included</li>
+        <li>Try it free first, then decide</li>
       </ul>
     </div>
     <span class="perf" aria-hidden="true"></span>
     <div class="t-stub">
-      <p class="t-price">80 €</p>
-      <p class="t-per">im Monat</p>
-      <p class="t-once" id="once">+ 150 € einmalig für 10 Tags</p>
-      <a class="btn btn-green" href="#kontakt">Gratis testen</a>
+      <p class="t-price">€80</p>
+      <p class="t-per">a month</p>
+      <p class="t-once" id="once">+ €150 one-off for 10 tags</p>
+      <a class="btn btn-green" href="#contact">Try it free</a>
     </div>
   </div>
 </section>
 
 <!-- ================= 8. KONTAKT: Karte auf einem Espresso, der gerade serviert wurde ================= -->
-<section class="kontakt" id="kontakt">
+<section class="kontakt" id="contact">
   <video class="k-photo" id="kVideo" autoplay muted loop playsinline preload="metadata" poster="bilder/espresso-poster.jpg" width="854" height="480" aria-hidden="true">
     <source src="bilder/espresso.webm" type="video/webm"><source src="bilder/espresso.mp4" type="video/mp4">
   </video>
   <div class="k-card f-paper" data-reveal>
-    <h2>Jetzt gratis testen</h2>
-    <p>Wir schicken dir ein Testpaket: einen Aufsteller und deine Demo-Website. Unverbindlich.</p>
+    <h2>Try it for free</h2>
+    <p>We’ll send you a test kit: one stand and your demo website. No strings attached.</p>
     <form class="k-form" id="contactForm">
       <label>Name<input required name="name" autocomplete="name"></label>
-      <label>Restaurant oder Laden<input required name="shop" autocomplete="organization"></label>
-      <label>E-Mail<input required type="email" name="mail" autocomplete="email" inputmode="email"></label>
-      <label>Art<select name="type" id="typeSel"><option>Restaurant</option><option>Café</option><option>Kleiner Laden</option><option>Automat</option></select></label>
-      <button class="btn btn-dark" type="submit">Testpaket anfordern</button>
-      <p class="k-note soft">Demo-Formular: Es werden keine Daten gesendet.</p>
+      <label>Restaurant or shop<input required name="shop" autocomplete="organization"></label>
+      <label>Email<input required type="email" name="mail" autocomplete="email" inputmode="email"></label>
+      <label>Type<select name="type" id="typeSel"><option>Restaurant</option><option>Café</option><option>Small shop</option><option>Vending machine</option></select></label>
+      <button class="btn btn-dark" type="submit">Request test kit</button>
+      <p class="k-note soft">Demo form: no data is sent.</p>
     </form>
     <div class="form-ok" id="formOk" hidden>
-      <h3>Danke!</h3>
-      <p>In der echten Version melden wir uns innerhalb von 24 Stunden. Hier ist es nur eine Demo.</p>
+      <h3>Thank you!</h3>
+      <p>In the real version we’d get back to you within 24 hours. This is just a demo.</p>
     </div>
   </div>
 </section>
@@ -674,14 +674,14 @@ ul,ol{list-style:none}
     <span class="blk" style="--hgt:100%">N</span><span class="blk" style="--hgt:78%">F</span><span class="blk" style="--hgt:92%">C</span><span class="blk" style="--hgt:64%">o</span><span class="blk" style="--hgt:72%">n</span><span class="blk" style="--hgt:60%">n</span><span class="blk" style="--hgt:84%">e</span><span class="blk" style="--hgt:70%">c</span><span class="blk" style="--hgt:96%">t</span>
   </div>
   <div class="foot-grid">
-    <nav class="foot-nav" aria-label="Kapitel im Fuß">
-      <a href="#so">So geht’s</a><a href="#demo">Ausprobieren</a><a href="#vorteile">Vorteile</a><a href="#drin">Was drin ist</a>
-      <a href="#fuer-wen">Für wen</a><a href="#preise">Preise</a><a href="#kontakt">Gratis testen</a><a href="#top">Nach oben</a>
+    <nav class="foot-nav" aria-label="Chapters in the footer">
+      <a href="#how">How it works</a><a href="#demo">Try it</a><a href="#benefits">Benefits</a><a href="#inside">What’s inside</a>
+      <a href="#who">Who it’s for</a><a href="#pricing">Pricing</a><a href="#contact">Try it free</a><a href="#top">Back to top</a>
     </nav>
-    <p class="foot-about">NFConnect – der NFC-Aufsteller für Restaurants, Cafés, kleine Läden und Automaten. Selbst entwickelt und im 3D-Drucker gebaut.</p>
+    <p class="foot-about">NFConnect – the NFC stand for restaurants, cafés, small shops and vending machines. Designed by us and built on a 3D printer.</p>
   </div>
-  <details class="credits"><summary>Bildnachweise</summary><p>Fotos und Video aus offenen Archiven: <a href="https://www.flickr.com/photos/10559879@N00/4105638342">Café-Theke</a> (avlxyz, CC BY-SA 2.0) · <a href="https://www.flickr.com/photos/34128007@N04/10475776156">Restaurant am Abend</a> (Prayitno / Thank you for (12 millions +) view, CC BY 2.0) · <a href="https://www.flickr.com/photos/22799676@N03/8246566956">Laden</a> (Peter Alfred Hess, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=5056847">Automat</a> (MApoCE, CC BY-SA 3.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=188972155">Baristas</a> (Shixart1985, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=41882039">Pizza</a> (Lombroso, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=80211858">Salat</a> (Geoff Peters from Vancouver, BC, Canada, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=180636827">Pasta</a> (Ralff Nestor Nacor, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=11769909">Tiramisu</a> (Raffaele Diomede from Pordenone, ITALIA, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=144679912">Limonade</a> (Twilightin, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/wiki/File:Der_perfekte_Espresso_aus_dem_Siebtr%C3%A4ger.ogv">Espresso-Video</a> (Max Duchardt, Katrin Engel, CC BY 3.0). Der Aufsteller ist ein Rendering unseres 3D-Modells.</p></details>
-  <div class="foot-last"><span>© 2026 NFConnect · Demo-Seite, Inhalte beispielhaft</span><a class="btn btn-dark btn-sm" href="#top">Nach oben</a></div>
+  <details class="credits"><summary>Image credits</summary><p>Photos and video from open archives: <a href="https://www.flickr.com/photos/10559879@N00/4105638342">Café counter</a> (avlxyz, CC BY-SA 2.0) · <a href="https://www.flickr.com/photos/34128007@N04/10475776156">Restaurant at night</a> (Prayitno / Thank you for (12 millions +) view, CC BY 2.0) · <a href="https://www.flickr.com/photos/22799676@N03/8246566956">Shop</a> (Peter Alfred Hess, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=5056847">Vending machine</a> (MApoCE, CC BY-SA 3.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=188972155">Baristas</a> (Shixart1985, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=41882039">Pizza</a> (Lombroso, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=80211858">Salad</a> (Geoff Peters from Vancouver, BC, Canada, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=180636827">Pasta</a> (Ralff Nestor Nacor, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=11769909">Tiramisu</a> (Raffaele Diomede from Pordenone, ITALIA, CC BY 2.0) · <a href="https://commons.wikimedia.org/w/index.php?curid=144679912">Lemonade</a> (Twilightin, CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/wiki/File:Der_perfekte_Espresso_aus_dem_Siebtr%C3%A4ger.ogv">Espresso video</a> (Max Duchardt, Katrin Engel, CC BY 3.0). The stand is a rendering of our 3D model.</p></details>
+  <div class="foot-last"><span>© 2026 NFConnect · Demo site, sample content</span><a class="btn btn-dark btn-sm" href="#top">Back to top</a></div>
 </footer>
 
 <script>
@@ -1009,7 +1009,7 @@ document.querySelectorAll('[data-reveal], [data-reveal-shutter]').forEach(el => 
     out.textContent = n;
     once.classList.add('tick');
     setTimeout(() => {
-      once.textContent = `+ ${n * 15} € einmalig für ${n} ${n === 1 ? 'Tag' : 'Tags'}`;
+      once.textContent = `+ €${n * 15} one-off for ${n} ${n === 1 ? 'tag' : 'tags'}`;
       once.classList.remove('tick');
     }, 120);
     $('minus').disabled = n <= 1; $('plus').disabled = n >= 60;
@@ -1020,14 +1020,14 @@ document.querySelectorAll('[data-reveal], [data-reveal-shutter]').forEach(el => 
 
 /* ============ Ausprobieren: Handy-Demo an Tisch 7 ============ */
 const DISHES = [
-  { id:1, name:'Margherita',        desc:'Tomate, Mozzarella, Basilikum', price:9.50,  img:'bilder/essen-pizza.webp' },
-  { id:2, name:'Caesar Salad',      desc:'Hähnchen, Parmesan, Croûtons', price:10.50, img:'bilder/essen-salat.webp' },
-  { id:3, name:'Pasta Pesto',       desc:'Hausgemachtes Basilikumpesto', price:11.00, img:'bilder/essen-pasta.webp' },
-  { id:4, name:'Tiramisu',          desc:'Nach Omas Rezept',             price:5.90,  img:'bilder/essen-tiramisu.webp' },
-  { id:5, name:'Hausgemachte Limo', desc:'Zitrone und Minze, 0,4 l',     price:4.20,  img:'bilder/essen-limo.webp' },
+  { id:1, name:'Margherita',        desc:'Tomato, mozzarella, basil', price:9.50,  img:'bilder/essen-pizza.webp' },
+  { id:2, name:'Caesar Salad',      desc:'Chicken, parmesan, croutons', price:10.50, img:'bilder/essen-salat.webp' },
+  { id:3, name:'Pasta Pesto',       desc:'Homemade basil pesto', price:11.00, img:'bilder/essen-pasta.webp' },
+  { id:4, name:'Tiramisu',          desc:'Grandma’s recipe',             price:5.90,  img:'bilder/essen-tiramisu.webp' },
+  { id:5, name:'Homemade lemonade', desc:'Lemon and mint, 0.4 l',     price:4.20,  img:'bilder/essen-limo.webp' },
 ];
 let cart = {};                                   // { Gericht-ID: Anzahl }
-const eur = n => n.toFixed(2).replace('.', ',') + ' €';
+const eur = n => '€' + n.toFixed(2);
 const views = ['v-menu','v-cart','v-done'];
 const demo = $('demo');
 const setWord = w => { $('demoWord').textContent = w; };   /* die Überschrift erzählt mit */
@@ -1046,7 +1046,7 @@ function renderMenu(){
     <div class="dish">
       <img src="${d.img}" alt="" width="240" height="240" loading="lazy">
       <div class="info"><b>${d.name}</b><span>${d.desc}</span><br><b class="pr">${eur(d.price)}</b></div>
-      <button class="add" data-id="${d.id}" aria-label="${d.name} in den Warenkorb">+</button>
+      <button class="add" data-id="${d.id}" aria-label="Add ${d.name} to cart">+</button>
     </div>`).join('');
 }
 function updateBar(){
@@ -1054,13 +1054,13 @@ function updateBar(){
   $('cartCount').textContent = t.count;
   $('cartSum').textContent = eur(t.sum);
   $('cartBar').disabled = t.count === 0;
-  if (!demo.classList.contains('is-paid')) setWord(t.count ? 'bestellt' : 'wartet');
+  if (!demo.classList.contains('is-paid')) setWord(t.count ? 'ordered' : 'waiting');
 }
 function renderCart(){
   const rows = DISHES.filter(d => cart[d.id]).map(d => `
     <div class="line"><span>${d.name}</span>
-      <span class="qty"><button data-m="${d.id}" aria-label="${d.name} entfernen">−</button>${cart[d.id]}<button data-p="${d.id}" aria-label="Noch eine ${d.name}">+</button></span></div>`);
-  $('cartLines').innerHTML = rows.join('') || '<p class="note">Dein Warenkorb ist leer.</p>';
+      <span class="qty"><button data-m="${d.id}" aria-label="Remove ${d.name}">−</button>${cart[d.id]}<button data-p="${d.id}" aria-label="One more ${d.name}">+</button></span></div>`);
+  $('cartLines').innerHTML = rows.join('') || '<p class="note">Your cart is empty.</p>';
   $('cartTotal').textContent = eur(totals().sum);
   $('payBtn').disabled = totals().count === 0;
 }
@@ -1080,25 +1080,25 @@ $('cartLines').addEventListener('click', e => {
   renderCart(); updateBar();
 });
 $('payBtn').addEventListener('click', () => {        /* SIMULIERTE Zahlung, es wird nichts abgebucht */
-  $('payBtn').textContent = 'Zahlung läuft …';
+  $('payBtn').textContent = 'Processing payment…';
   setTimeout(() => {
-    $('payBtn').textContent = 'Jetzt bezahlen'; show('v-done');
-    demo.classList.add('is-paid'); setWord('bezahlt');   /* das Kapitel wechselt die Farbe */
+    $('payBtn').textContent = 'Pay now'; show('v-done');
+    demo.classList.add('is-paid'); setWord('paid');   /* das Kapitel wechselt die Farbe */
   }, 900);
 });
 
 /* Sterne */
-$('stars').innerHTML = [1,2,3,4,5].map(n => `<button data-s="${n}" aria-label="${n} von 5 Sternen"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></button>`).join('');
+$('stars').innerHTML = [1,2,3,4,5].map(n => `<button data-s="${n}" aria-label="${n} out of 5 stars"><svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="m12 2.6 2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg></button>`).join('');
 $('stars').addEventListener('click', e => {
   const b = e.target.closest('button'); const s = b ? +b.dataset.s : 0; if (!s) return;
   [...$('stars').children].forEach((b,i) => b.classList.toggle('on', i < s));
-  setWord('bewertet');
+  setWord('reviewed');
 });
-$('gBtn').addEventListener('click', e => { e.preventDefault(); $('gNote').textContent = 'In der echten Version öffnet sich hier die Google-Bewertung.'; setWord('bewertet'); });
+$('gBtn').addEventListener('click', e => { e.preventDefault(); $('gNote').textContent = 'In the real version, this opens the Google review page.'; setWord('reviewed'); });
 $('resetBtn').addEventListener('click', () => {
   cart = {}; demo.classList.remove('is-paid'); updateBar(); renderCart();
   [...$('stars').children].forEach(b => b.classList.remove('on'));
-  $('gNote').textContent = 'Demo – kein echter Link'; show('v-menu');
+  $('gNote').textContent = 'Demo – not a real link'; show('v-menu');
 });
 renderMenu(); updateBar(); show('v-menu');
 
